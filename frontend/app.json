@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "a9db803c-78bc-443d-8edc-4c036103f832"
+      }
+    },
+    "android": {
+      "package": "com.alastor1314.frontend"
+    }
+  }
+}
