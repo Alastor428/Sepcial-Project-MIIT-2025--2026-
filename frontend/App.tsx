@@ -1,12 +1,14 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import { NativeBaseProvider } from "native-base";
+import BottomTabNavigator from "./navigation/BottomTabNavigator";
 
 export default function App() {
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text style={{ color: "white", fontSize: 20, fontWeight: "bold" }}>
-        Welcome to Online Payment System!
-      </Text>
-    </View>
+    <NativeBaseProvider>
+      <NavigationContainer>
+        <BottomTabNavigator />
+      </NavigationContainer>
+    </NativeBaseProvider>
   );
 }
