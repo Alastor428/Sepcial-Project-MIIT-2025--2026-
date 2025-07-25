@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Ionicons,
   MaterialIcons,
@@ -13,9 +13,29 @@ import {
   Pressable,
   Icon,
   Center,
+  Spinner,
 } from "native-base";
+import axios from "axios";
 
 export default function HomeScreen({ navigation }) {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    axios
+      .get("http://192.168.68.113:5000/api/user/123/dashboard")
+      .then((res) => setUser(res.data))
+      .catch((err) => console.error("Backend error:", err));
+  }, []);
+
+  if (!user) {
+    return (
+      <Center flex={1}>
+        <Spinner size="lg" />
+        <Text mt={4}>Loading...</Text>
+      </Center>
+    );
+  }
+
   return (
     <Box flex={1} bg="#fff">
       {/* Upper Section */}
@@ -36,8 +56,8 @@ export default function HomeScreen({ navigation }) {
             color="#fff"
             mr={2}
           />
-          <Text color="#fff" fontSize={"lg"} fontWeight={"600"}>
-            Account Name
+          <Text color="#fff" fontSize={"lg"} fontWeight={"400"}>
+            {user.name}
           </Text>
         </HStack>
         <Center mt={5} w="100%">
@@ -53,16 +73,18 @@ export default function HomeScreen({ navigation }) {
               mr={1.5}
             />
             <Text color="#fff" fontSize={"2xl"} fontWeight={"bold"}>
-              1,000.00
+              {user.balance.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+              })}
             </Text>
           </HStack>
           <Text color="#e0e6f7" fontSize="xs" mt={1}>
-            User ID-123456789
+            User ID-{user.userId}
           </Text>
         </Center>
       </Box>
 
-      {/* Middle Section: 6 Function Buttons hee hee */}
+      {/* Middle Section: 6 Function Buttons */}
       <VStack mt={2} flex={1} justifyContent="center" space={39}>
         <HStack space={70} justifyContent="center">
           <FunctionButton
