@@ -2,7 +2,7 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
 import { Box, HStack, Pressable, Icon, Text } from "native-base";
-import HomeScreen from "../screens/HomeScreen";
+import HomeScreen from "../screens/main_screens/HomeScreen";
 
 function PlaceholderScreen({ route }) {
   return (
