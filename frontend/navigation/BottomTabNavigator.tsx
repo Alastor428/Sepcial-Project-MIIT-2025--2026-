@@ -3,6 +3,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
 import { Box, HStack, Pressable, Icon, Text } from "native-base";
 import HomeScreen from "../screens/main_screens/HomeScreen";
+import HomeScreen_StackNavigator from "./HomeScreen_StackNavigator";
 
 function PlaceholderScreen({ route }) {
   return (
@@ -146,7 +147,7 @@ export default function BottomTabNavigator() {
       tabBar={(props) => <CustomTabBar {...props} />}
       screenOptions={{ headerShown: false }}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Home" component={HomeScreen_StackNavigator} />
       <Tab.Screen name="History" component={PlaceholderScreen} />
       <Tab.Screen name="Scan" component={PlaceholderScreen} />
       <Tab.Screen name="Bank" component={PlaceholderScreen} />
