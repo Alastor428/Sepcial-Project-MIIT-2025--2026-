@@ -17,7 +17,7 @@ const QRScreen: React.FC = () => {
 
   useEffect(() => {
     axios
-      .get("http://192.168.68.111:5000/api/user/123/dashboard")
+      .get("http://192.168.99.96:5000/api/user/123/dashboard")
       .then((res) => {
         setUser(res.data);
         setLoading(false);
