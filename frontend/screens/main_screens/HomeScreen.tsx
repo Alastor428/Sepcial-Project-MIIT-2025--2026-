@@ -40,7 +40,7 @@ export default function HomeScreen({ navigation }) {
     <Box flex={1} bg="#fff">
       {/* Upper Section */}
       <Box
-        bg="#7B93C7"
+        bg="#B9BDF0"
         borderBottomLeftRadius={30}
         borderBottomRightRadius={30}
         pt={16}
