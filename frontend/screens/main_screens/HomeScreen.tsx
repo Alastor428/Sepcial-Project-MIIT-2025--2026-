@@ -22,7 +22,7 @@ export default function HomeScreen({ navigation }) {
 
   useEffect(() => {
     axios
-      .get("http://192.168.99.96:5000/api/user/123/dashboard")
+      .get("http://192.168.68.107:5000/api/user/123/dashboard")
       .then((res) => setUser(res.data))
       .catch((err) => console.error("Backend error:", err));
   }, []);
@@ -40,7 +40,7 @@ export default function HomeScreen({ navigation }) {
     <Box flex={1} bg="#fff">
       {/* Upper Section */}
       <Box
-        bg="#7B93C7"
+        bg="#B9BDF0"
         borderBottomLeftRadius={30}
         borderBottomRightRadius={30}
         pt={16}
