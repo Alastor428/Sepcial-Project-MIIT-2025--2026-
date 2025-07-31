@@ -9,6 +9,7 @@ import {
   Pressable,
   Input,
 } from "native-base";
+import { TextInput } from "react-native";
 import axios from "axios";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -91,15 +92,18 @@ const SetAmountScreen: React.FC = () => {
           <Text fontSize="lg" color="#7A83F4" mr={3}>
             Amount
           </Text>
-          <Input
-            flex={1}
+          <TextInput
+            style={{
+              flex: 1,
+              borderWidth: 0, // Removes outline
+              fontSize: 18, // Use numeric font size instead of "lg"
+              paddingVertical: 8,
+              paddingHorizontal: 4,
+            }}
             placeholder="Enter Amount"
             keyboardType="numeric"
-            fontSize="lg"
             value={amount}
             onChangeText={(text) => setAmount(text.replace(/[^0-9.]/g, ""))}
-            borderWidth={0} // ✅ Removes outline
-            _focus={{ borderWidth: 0 }} // ✅ Prevents error
           />
         </HStack>
       </Center>
