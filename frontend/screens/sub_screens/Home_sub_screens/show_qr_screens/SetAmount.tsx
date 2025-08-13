@@ -4,9 +4,9 @@ import axios from "axios";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
-import type { RootStackParamList } from "../../../navigation/HomeScreen_StackNavigator"; // Make sure this path is correct
+import type { RootStackParamList } from "../../../../navigation/HomeScreen_StackNavigator"; 
 
-type QRScreenNavigationProp = StackNavigationProp<RootStackParamList, "SetAmount">;
+type QRScreenNavigationProp = StackNavigationProp<RootStackParamList, "SetAmountScreen">;
 
 type User = {
   name: string;
