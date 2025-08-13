@@ -32,7 +32,7 @@ const QRScreen: React.FC = () => {
 
   useEffect(() => {
     axios
-      .get("http://192.168.68.109:5000/api/user/123/dashboard")
+      .get("http://192.168.99.96:5000/api/user/123/dashboard")
       .then((res) => {
         setUser(res.data);
         setLoading(false);
@@ -140,9 +140,11 @@ const QRScreen: React.FC = () => {
                 onPress={() => navigation.navigate("SetAmountScreen")}
                 mt={10}
                 mr={2}
+                borderRightColor={"#7A83F4"}
+                borderRightWidth={2}
               >
-                <Text color="#7A83F4" fontSize="md" fontWeight="bold">
-                  Set Amount
+                <Text color="#7A83F4" fontSize="md" fontWeight="bold"mr={4}>
+                  Set Amount  
                 </Text>
               </Pressable>
               <Pressable

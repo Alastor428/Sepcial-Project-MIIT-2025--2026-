@@ -15,6 +15,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import type { RootStackParamList } from "../../../../navigation/HomeScreen_StackNavigator";
+import NextButton from "../../../../components/next_button";
 
 type QRScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -35,7 +36,7 @@ const SetAmountScreen: React.FC = () => {
 
   useEffect(() => {
     axios
-      .get("http://192.168.68.109:5000/api/user/123/dashboard")
+      .get("http://192.168.99.96:5000/api/user/123/dashboard")
       .then((res) => {
         setUser(res.data);
         setLoading(false);
@@ -79,19 +80,32 @@ const SetAmountScreen: React.FC = () => {
 
       {/* Input Section */}
       <Center flex={1} px={4}>
-        <HStack
-          w="90%"
+        <Box 
+         w="90%"
           alignItems="center"
           borderWidth={2}
           borderColor="#7A83F4"
-          borderRadius={20}
+          borderRadius={8}
+          shadow={2}
+          mt={-80}
+          marginY={30}
+          marginX={4}
+          width={344}
+          height={208}
           px={4}
           py={2}
-          bg="#fff"
-        >
+          bg="#fff">
+          <HStack
+            alignItems="left"
+            justifyContent="space-between"
+            width="100%"
+            mb={5}>
           <Text fontSize="lg" color="#7A83F4" mr={3}>
             Amount
           </Text>
+          </HStack>
+          <HStack
+          mb={10}>
           <TextInput
             style={{
               flex: 1,
@@ -99,13 +113,22 @@ const SetAmountScreen: React.FC = () => {
               fontSize: 18, // Use numeric font size instead of "lg"
               paddingVertical: 8,
               paddingHorizontal: 4,
+              borderBottomColor: "#7A83F4",
+              borderBottomWidth: 2,
             }}
             placeholder="Enter Amount"
             keyboardType="numeric"
             value={amount}
             onChangeText={(text) => setAmount(text.replace(/[^0-9.]/g, ""))}
           />
+         <Text fontSize="lg" color="#7A83F4" mr={3}>
+            Ks
+          </Text>
         </HStack>
+        <Pressable onPress={() => navigation.navigate("QR")}>
+            <NextButton/>
+          </Pressable>
+        </Box>
       </Center>
     </Box>
   );
