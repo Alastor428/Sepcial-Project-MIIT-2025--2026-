@@ -60,22 +60,17 @@ const SetAmountScreen: React.FC = () => {
     <Box flex={1} bg="#fff">
       {/* Header */}
       <Box bg="#fff" pt={20} pb={2} px={8} alignItems="flex-start">
-        <HStack height={26} alignItems="center">
-          <Pressable onPress={() => navigation.navigate("QR")}>
-            <Icon
-              as={Ionicons}
-              name="arrow-undo"
-              size={6}
-              color="#7A83F4"
-              mr={2}
-            />
-          </Pressable>
-        </HStack>
-        <Center w="100%" mt={-10}>
-          <Text color="#7A83F4" fontSize="2xl" fontWeight="bold">
-            Set Amount
-          </Text>
-        </Center>
+        <HStack alignItems="center" px={4} pt={2} pb={4} ml={-4}>
+                        <Pressable onPress={() => navigation.goBack()}>
+                          <Icon as={Ionicons} name="arrow-undo" size={7} color="#7A83F4" />
+                        </Pressable>
+                        <Center flex={1}>
+                          <Text fontSize="24" fontWeight="bold" color="#7A83F4">
+                            Set Amount
+                          </Text>
+                        </Center>
+                        <Box w={6} /> 
+                      </HStack>
       </Box>
 
       {/* Input Section */}

@@ -67,27 +67,22 @@ const QRScreen: React.FC = () => {
         bg="#B9BDF0"
         borderBottomLeftRadius={20}
         borderBottomRightRadius={20}
-        pt={20}
-        pb={16}
-        px={8}
-        alignItems="flex-start"
+        pt={12}
+        pb={8}
+        px={6}
+        height={180}
       >
-        <HStack height={26} alignItems="center">
-          <Pressable onPress={() => navigation.navigate("HomeMain")}>
-            <Icon
-              as={Ionicons}
-              name="arrow-undo"
-              size={6}
-              color="#fff"
-              mr={2}
-            />
-          </Pressable>
-        </HStack>
-        <Center w="100%" mt={-10} mb={4}>
-          <Text color="#fff" fontSize="3xl" fontWeight="bold">
-            QR
-          </Text>
-        </Center>
+         <HStack alignItems="center" px={4} pt={2} pb={4} ml={-4}>
+                        <Pressable onPress={() => navigation.goBack()}>
+                          <Icon as={Ionicons} name="arrow-undo" size={7} color="#fff" />
+                        </Pressable>
+                        <Center flex={1}>
+                          <Text fontSize="32" fontWeight="bold" color="#fff">
+                            QR
+                          </Text>
+                        </Center>
+                        <Box w={6} /> 
+                      </HStack>
       </Box>
       {/* QR Code Section */}
       <Box

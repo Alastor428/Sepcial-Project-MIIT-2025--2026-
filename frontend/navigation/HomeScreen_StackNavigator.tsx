@@ -17,6 +17,7 @@ export type RootStackParamList = {
   SetAmountScreen: undefined;
   SaveImage: undefined;
   Transfer: undefined;
+  TransferAmount: undefined;
   CashOut: undefined;
   CashIn: undefined;
   QuickPay: undefined;
