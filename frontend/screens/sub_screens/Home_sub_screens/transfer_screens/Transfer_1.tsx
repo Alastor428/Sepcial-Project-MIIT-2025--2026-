@@ -10,6 +10,8 @@ import {
   Center,
 } from "native-base";
 import { Ionicons, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
+import SmallNextButton from "../../../../components/small_next_button";
+import { PixelRatio } from "react-native";
 
 export default function TransferScreen({ navigation }: any) {
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -19,20 +21,23 @@ export default function TransferScreen({ navigation }: any) {
       {/* Header */}
       <Box
         bg="#B8AEE0"
-        borderBottomLeftRadius={30}
-        borderBottomRightRadius={30}
+        borderBottomLeftRadius={20}
+        borderBottomRightRadius={20}
         pt={12}
         pb={8}
         px={6}
+        height={180}
       >
-        <HStack alignItems="center" space={3}>
+        <HStack alignItems="center" height={26}>
           <Pressable onPress={() => navigation.goBack()}>
-            <Icon as={Ionicons} name="arrow-back" size={6} color="#fff" />
+            <Icon as={Ionicons} name="arrow-undo" size={6} color="#fff" />
           </Pressable>
-          <Text color="#fff" fontSize="2xl" fontWeight="bold">
-            Transfer
-          </Text>
         </HStack>
+        <Center w="100%" mt={-9} mb={4}>
+                  <Text color="#fff" fontSize="3xl" fontWeight="bold">
+                    Transfer
+                  </Text>
+                </Center>
       </Box>
 
       {/* Input Section */}
@@ -45,16 +50,21 @@ export default function TransferScreen({ navigation }: any) {
           shadow={2}
           w="80%"
           alignItems="center"
+          mt={-10}
+          width={329}
+          height={162}
+          mb={10}
         >
-          <Text color="#6A5ACD" mb={2}>
+          <Text color="#7A83F4" mb={2}>
             Transfer to Phone Number{" "}
-            <Icon as={MaterialIcons} name="error-outline" size={4} />
+            <Icon as={MaterialIcons} name="error-outline" size={4} color={"#7A83F4"}/>
           </Text>
           <HStack
             borderBottomWidth={1}
-            borderColor="#ccc"
+            borderColor="#7A83F4"
             alignItems="center"
-            mb={4}
+            mb={5}
+            mt={2}
           >
             <Input
               value={phoneNumber}
@@ -67,20 +77,12 @@ export default function TransferScreen({ navigation }: any) {
               keyboardType="numeric"
               width="85%"
             />
-            <Icon as={FontAwesome5} name="address-book" size={4} />
+            <Pressable>
+              <Icon as={FontAwesome5} name="address-book" size={4} color={"#7A83F4"}/>
+            </Pressable>
           </HStack>
-          <Pressable
-            bg="#6A5ACD"
-            px={6}
-            py={2}
-            borderRadius={8}
-            onPress={() => {
-              console.log("Proceeding with:", phoneNumber);
-            }}
-          >
-            <Text color="#fff" fontWeight="bold">
-              Next
-            </Text>
+          <Pressable>
+            <SmallNextButton/>
           </Pressable>
         </Box>
       </Center>
