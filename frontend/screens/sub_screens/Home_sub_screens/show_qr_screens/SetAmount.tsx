@@ -80,64 +80,56 @@ const SetAmountScreen: React.FC = () => {
 
       {/* Input Section */}
       <Center flex={1} px={4}>
-      <Box
-      w="90%"
+        <Box
+          w="90%"
           alignItems="center"
           borderWidth={2}
           borderColor="#7A83F4"
-          borderRadius={16}
+          borderRadius={8}
           shadow={2}
-          marginY={90}
-          marginX={"auto"}
           mt={-80}
-          mb={10}
+          marginY={30}
+          marginX={4}
+          width={344}
+          height={208}
           px={4}
           py={2}
           bg="#fff"
-          width={"344"}
-          height={"208"}>
-        <HStack
-          w="336"
-          alignItems="left"
-          px={4}
-          py={2}
-          bg="#fff"
-          mb={4}
         >
-          <Text fontSize="lg" color="#7A83F4" mr={3}>
-            Amount
-          </Text>
-        </HStack>
-        <HStack
-        w="90%"
-        alignItems="center"
-        px={4}
-        py={2}
-        bg="#fff"
-        mx="auto"
-        mb={4}>
-          <TextInput
-            style={{
-              flex: 1,
-              borderWidth: 0, // Removes outline
-              fontSize: 18, // Use numeric font size instead of "lg"
-              paddingVertical: 8,
-              paddingHorizontal: 4,
-              borderBottomColor: "#7A83F4",
-              borderBottomWidth: 2,
-              marginLeft: -30,
-            }}
-            placeholder="Enter Amount"
-            keyboardType="numeric"
-            value={amount}
-            onChangeText={(text) => setAmount(text.replace(/[^0-9.]/g, ""))}
-          />
-          <Text style={{ fontSize: 18, color: "#7A83F4", marginLeft: 10,marginRight:-30 }}>Ks</Text>
-        </HStack>
-        <Pressable onPress={() => navigation.navigate("QR")}>
-            <NextButton/>
+          <HStack
+            alignItems="left"
+            justifyContent="space-between"
+            width="100%"
+            mb={5}
+          >
+            <Text fontSize="lg" color="#7A83F4" mr={3}>
+              Amount
+            </Text>
+          </HStack>
+          <HStack mb={10}>
+            <TextInput
+              style={{
+                flex: 1,
+                borderWidth: 0, // Removes outline
+                fontSize: 18, // Use numeric font size instead of "lg"
+                paddingVertical: 8,
+                paddingHorizontal: 4,
+                borderBottomColor: "#7A83F4",
+                borderBottomWidth: 2,
+              }}
+              placeholder="Enter Amount"
+              keyboardType="numeric"
+              value={amount}
+              onChangeText={(text) => setAmount(text.replace(/[^0-9.]/g, ""))}
+            />
+            <Text fontSize="lg" color="#7A83F4" mr={3}>
+              Ks
+            </Text>
+          </HStack>
+          <Pressable onPress={() => navigation.navigate("QR")}>
+            <NextButton />
           </Pressable>
-      </Box>
+        </Box>
       </Center>
     </Box>
   );

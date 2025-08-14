@@ -142,9 +142,8 @@ const QRScreen: React.FC = () => {
                 mr={2}
                 borderRightColor={"#7A83F4"}
                 borderRightWidth={2}
-                justifyContent={"center"}
               >
-                <Text color="#7A83F4" fontSize="md" fontWeight="bold" mr={2}>
+                <Text color="#7A83F4" fontSize="md" fontWeight="bold" mr={4}>
                   Set Amount
                 </Text>
               </Pressable>

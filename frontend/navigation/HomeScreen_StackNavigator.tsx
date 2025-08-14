@@ -4,6 +4,8 @@ import { createStackNavigator } from "@react-navigation/stack";
 import HomeScreen from "../screens/main_screens/HomeScreen";
 import QRScreen from "../screens/sub_screens/Home_sub_screens/show_qr_screens/QR";
 import SetAmountScreen from "../screens/sub_screens/Home_sub_screens/show_qr_screens/SetAmount";
+import CashInScreen from "../screens/sub_screens/Home_sub_screens/cash_in_screens/Cash-In";
+import TransferAmountScreen from "../screens/sub_screens/Home_sub_screens/transfer_screens/Transfer_2";
 
 function PlaceholderScreen() {
   return null;
@@ -30,8 +32,9 @@ export default function HomeScreen_StackNavigator() {
       <Stack.Screen name="QR" component={QRScreen} />
       <Stack.Screen name="SetAmountScreen" component={SetAmountScreen} />
       <Stack.Screen name="Transfer" component={TransferScreen} />
+      <Stack.Screen name="TransferAmount" component={TransferAmountScreen} />
       <Stack.Screen name="CashOut" component={PlaceholderScreen} />
-      <Stack.Screen name="CashIn" component={PlaceholderScreen} />
+      <Stack.Screen name="CashIn" component={CashInScreen} />
       <Stack.Screen name="QuickPay" component={PlaceholderScreen} />
       <Stack.Screen name="TopUp" component={PlaceholderScreen} />
     </Stack.Navigator>
