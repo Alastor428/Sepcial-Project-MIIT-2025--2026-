@@ -12,6 +12,7 @@ import {
 import { Ionicons, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
 import SmallNextButton from "../../../../components/small_next_button";
 import { PixelRatio } from "react-native";
+import TransferAmountScreen from "./Transfer_2"; // Assuming this is the next screen
 
 export default function TransferScreen({ navigation }: any) {
   const [phoneNumber, setPhoneNumber] = useState("");
