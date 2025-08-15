@@ -10,22 +10,25 @@ import {
   Center,
 } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
+import TransferButton from "../../../../components/transfer_button";
 
 export default function TransferAmountScreen({ navigation }: any) {
   const [amount, setAmount] = useState("");
 
   return (
     <Box flex={1} bg="#fff">
-      {/* Header */}
-      <Box px={4} pt={12} pb={4}>
-        <HStack alignItems="center" space={3}>
-          <Pressable onPress={() => navigation.goBack()}>
-            <Icon as={Ionicons} name="arrow-back" size={6} color="#4C3FA7" />
-          </Pressable>
-          <Text fontSize="2xl" fontWeight="bold" color="#4C3FA7">
-            Transfer
-          </Text>
-        </HStack>
+      <Box px={4} pt={12} pb={4} ml={-4}>
+        <HStack alignItems="center" px={4} pt={2} pb={4} >
+                <Pressable onPress={() => navigation.goBack()}>
+                  <Icon as={Ionicons} name="arrow-undo" size={7} color="#7A83F4" />
+                </Pressable>
+                <Center flex={1}>
+                  <Text fontSize="24" fontWeight="bold" color="#7A83F4">
+                    Transfer
+                  </Text>
+                </Center>
+                <Box w={6} /> 
+              </HStack>
       </Box>
 
       {/* Recipient Info */}
@@ -34,14 +37,14 @@ export default function TransferAmountScreen({ navigation }: any) {
           <Icon
             as={Ionicons}
             name="person-circle-outline"
-            size={6}
-            color="#4C3FA7"
+            size={10}
+            color="#7A83F4"
           />
           <VStack>
-            <Text fontWeight="medium" color="#4C3FA7">
+            <Text fontWeight="medium" color="#7A83F4" fontSize="lg">
               Transferred Account Name
             </Text>
-            <Text color="#4C3FA7" fontSize="sm">
+            <Text color="#7A83F4" fontSize="sm">
               ******789
             </Text>
           </VStack>
@@ -49,7 +52,7 @@ export default function TransferAmountScreen({ navigation }: any) {
 
         {/* Amount Input */}
         <VStack mt={6} space={2}>
-          <Text color="#4C3FA7">Amount (Ks)</Text>
+          <Text color="#7A83F4" fontSize="lg">Amount (Ks)</Text>
           <Input
             variant="unstyled"
             placeholder="Enter Amount"
@@ -62,12 +65,12 @@ export default function TransferAmountScreen({ navigation }: any) {
           />
           <HStack justifyContent="space-between" mt={2}>
             <HStack alignItems="center" space={1}>
-              <Text color="#4C3FA7" fontSize="xs">
+              <Text color="#7A83F4" fontSize="xs">
                 Available Balance
               </Text>
-              <Icon as={Ionicons} name="eye-outline" size={4} color="#4C3FA7" />
+              <Icon as={Ionicons} name="eye-outline" size={4} color="#7A83F4" />
             </HStack>
-            <Text color="#4C3FA7" fontSize="xs">
+            <Text color="#7A83F4" fontSize="xs">
               1000.00ks
             </Text>
           </HStack>
@@ -78,13 +81,9 @@ export default function TransferAmountScreen({ navigation }: any) {
           alignSelf="center"
           px={8}
           py={2}
-          bg="#4C3FA7"
-          borderRadius={8}
           onPress={() => console.log("Transfer amount:", amount)}
         >
-          <Text color="#fff" fontWeight="bold">
-            Transfer
-          </Text>
+          <TransferButton/>
         </Pressable>
       </VStack>
     </Box>

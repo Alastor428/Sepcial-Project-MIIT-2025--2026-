@@ -1,77 +1,97 @@
-import React, { useState } from "react";
-import {
-  Box,
-  Text,
-  VStack,
-  HStack,
-  Pressable,
-  Icon,
-  Input,
-  Center,
-} from "native-base";
+// TransferPinScreen.tsx
+import React, { useState, useRef } from "react";
+import { Box, Text, HStack, Center, Icon, Pressable, Input, Button } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import type { StackNavigationProp } from "@react-navigation/stack";
+import type { RootStackParamList } from "../../../../navigation/HomeScreen_StackNavigator";
+import ContinueButton from "../../../../components/continue_button";
 
-export default function EnterPinScreen({ navigation }: any) {
-  const [pin, setPin] = useState<string>("");
+type NavigationProp = StackNavigationProp<RootStackParamList>;
+
+const TransferPinScreen: React.FC = () => {
+  const navigation = useNavigation<NavigationProp>();
+  const [pin, setPin] = useState<string[]>(["", "", "", "", "", ""]);
+  const inputs = useRef<Array<any>>([]);
+
+  const handleChange = (text: string, index: number) => {
+    const newPin = [...pin];
+    newPin[index] = text;
+    setPin(newPin);
+
+    if (text && index < 5) {
+      inputs.current[index + 1].focus();
+    }
+  };
+
+  const handleBackspace = (key: string, index: number) => {
+    if (key === "Backspace" && !pin[index] && index > 0) {
+      inputs.current[index - 1].focus();
+    }
+  };
+
+  const handleContinue = () => {
+    const enteredPin = pin.join("");
+    console.log("Entered Account PIN:", enteredPin);
+    // validate and navigate
+  };
 
   return (
-    <Box flex={1} bg="#fff">
-      {/* Header */}
-      <Box px={4} pt={12} pb={4}>
-        <HStack alignItems="center" space={3}>
-          <Pressable onPress={() => navigation.goBack()}>
-            <Icon as={Ionicons} name="arrow-back" size={6} color="#4C3FA7" />
-          </Pressable>
-          <Text fontSize="2xl" fontWeight="bold" color="#4C3FA7">
+    <Box flex={1} bg="#fff" safeArea>
+      <HStack alignItems="center" px={4} pt={2} pb={4} mb={-20}>
+        <Pressable onPress={() => navigation.goBack()}>
+          <Icon as={Ionicons} name="arrow-undo" size={7} color="#7A83F4" />
+        </Pressable>
+        <Center flex={1}>
+          <Text fontSize="24" fontWeight="bold" color="#7A83F4">
             Transfer
           </Text>
-        </HStack>
-      </Box>
+        </Center>
+        <Box w={6} /> 
+      </HStack>
 
-      {/* PIN Input */}
-      <VStack mt={10} alignItems="center" space={6}>
-        <Text fontSize="md" color="#4C3FA7">
-          Enter Your PIN
+      {/* Body */}
+      <Center flex={1} px={6} mt={-250}>
+        <Text fontSize="20" mb={85} color="#7A83F4">
+          Enter Your Pin
         </Text>
 
-        <Input
-          value={pin}
-          onChangeText={(text) => setPin(text.replace(/[^0-9]/g, ""))}
-          placeholder="Enter 6-digit PIN"
-          maxLength={6}
-          keyboardType="numeric"
-          secureTextEntry
-          textAlign="center"
-          fontSize="xl"
-          borderColor="#4C3FA7"
-          borderWidth={1.5}
-          borderRadius={10}
-          px={4}
-          py={3}
-          w="60%"
-        />
+        {/* PIN Inputs */}
+        <HStack space={3} mb={20}>
+          {pin.map((value, index) => (
+            <Input
+              key={index}
+              ref={(ref) => (inputs.current[index] = ref)}
+              value={value}
+              onChangeText={(text) => handleChange(text.replace(/[^0-9]/g, "").slice(0, 1), index)}
+              keyboardType="numeric"
+              variant="unstyled"
+              secureTextEntry
+              textAlign="center"
+              fontSize="xl"
+              borderColor="#7A83F4"
+              borderWidth={1}
+              borderRadius={6}
+              w={38}
+              h={38}
+              maxLength={1}
+            />
 
+          ))}
+        </HStack>
+
+        {/* Continue Button */}
         <Pressable
-          mt={6}
-          alignSelf="center"
-          px={8}
-          py={2}
-          bg="#4C3FA7"
-          borderRadius={8}
-          onPress={() => {
-            if (pin.length === 6) {
-              console.log("Entered PIN:", pin);
-              // add navigation or validation here
-            } else {
-              alert("Please enter a 6-digit PIN");
-            }
-          }}
+          w="100%"
+          py={4}
+          onPress={handleContinue}
+          ml={5}
         >
-          <Text color="#fff" fontWeight="bold">
-            Continue
-          </Text>
+          <ContinueButton/>
         </Pressable>
-      </VStack>
+      </Center>
     </Box>
   );
-}
+};
+
+export default TransferPinScreen;
