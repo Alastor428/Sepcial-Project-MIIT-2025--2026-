@@ -1,97 +1,120 @@
-// TransferPinScreen.tsx
-import React, { useState, useRef } from "react";
-import { Box, Text, HStack, Center, Icon, Pressable, Input, Button } from "native-base";
+import React, { useState } from "react";
+import { Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
-import type { StackNavigationProp } from "@react-navigation/stack";
-import type { RootStackParamList } from "../../../../navigation/HomeScreen_StackNavigator";
-import ContinueButton from "../../../../components/continue_button";
+import { useRoute } from "@react-navigation/native";
+import {
+  Box,
+  VStack,
+  HStack,
+  Pressable,
+  Icon,
+  Input,
+  Modal,
+  Text,
+  Button,
+} from "native-base";
 
-type NavigationProp = StackNavigationProp<RootStackParamList>;
+type RouteParams = {
+  accountNumber?: string;
+};
 
-const TransferPinScreen: React.FC = () => {
-  const navigation = useNavigation<NavigationProp>();
-  const [pin, setPin] = useState<string[]>(["", "", "", "", "", ""]);
-  const inputs = useRef<Array<any>>([]);
+export default function TransferConfirmScreen({ navigation }: any) {
+  const [amount, setAmount] = useState("");
+  const [showConfirm, setShowConfirm] = useState(false);
 
-  const handleChange = (text: string, index: number) => {
-    const newPin = [...pin];
-    newPin[index] = text;
-    setPin(newPin);
+  const route = useRoute<any>();
+  const accountNumber = route?.params?.accountNumber ?? "Unknown";
 
-    if (text && index < 5) {
-      inputs.current[index + 1].focus();
-    }
+  const maskedNumber =
+    accountNumber.length > 3
+      ? "******" + accountNumber.slice(-3)
+      : accountNumber;
+
+  const handleAmountChange = (text: string) => {
+    const cleaned = text.replace(/[^0-9]/g, ""); // allow only numbers
+    setAmount(cleaned);
   };
 
-  const handleBackspace = (key: string, index: number) => {
-    if (key === "Backspace" && !pin[index] && index > 0) {
-      inputs.current[index - 1].focus();
-    }
-  };
-
-  const handleContinue = () => {
-    const enteredPin = pin.join("");
-    console.log("Entered Account PIN:", enteredPin);
-    // validate and navigate
+  const handleConfirm = () => {
+    setShowConfirm(false);
+    Alert.alert("Transfer Successful", `Transferred to ${accountNumber}`);
   };
 
   return (
-    <Box flex={1} bg="#fff" safeArea>
-      <HStack alignItems="center" px={4} pt={2} pb={4} mb={-20}>
-        <Pressable onPress={() => navigation.goBack()}>
-          <Icon as={Ionicons} name="arrow-undo" size={7} color="#7A83F4" />
+    <Box flex={1} bg="#fff" p={4}>
+      {/* Header */}
+      <HStack alignItems="center" mb={6}>
+        <Pressable onPress={navigation.goBack}>
+          <Icon as={Ionicons} name="arrow-back" size={7} color="#7B93C7" />
         </Pressable>
-        <Center flex={1}>
-          <Text fontSize="24" fontWeight="bold" color="#7A83F4">
-            Transfer
-          </Text>
-        </Center>
-        <Box w={6} /> 
+        <Text flex={1} textAlign="center" fontSize="xl" fontWeight="600" color="#7B93C7">
+          Transfer
+        </Text>
       </HStack>
 
-      {/* Body */}
-      <Center flex={1} px={6} mt={-250}>
-        <Text fontSize="20" mb={85} color="#7A83F4">
-          Enter Your Pin
+      {/* Account Info */}
+      <HStack alignItems="center" mb={6}>
+        <Icon
+          as={Ionicons}
+          name="person-circle-outline"
+          size={7}
+          color="#7B93C7"
+          mr={2}
+        />
+        <VStack>
+          <Text color="gray.500" fontSize="sm">
+            Transferred Account Number
+          </Text>
+          <Text fontSize="md" fontWeight="600" color="gray.700">
+            {maskedNumber}
+          </Text>
+        </VStack>
+      </HStack>
+
+      {/* Input Amount */}
+      <VStack space={3}>
+        <Text fontSize="sm" color="gray.600">
+          Amount (Ks)
         </Text>
+        <Input
+          placeholder="Enter amount"
+          keyboardType="numeric"
+          fontSize="lg"
+          value={amount}
+          onChangeText={handleAmountChange}
+        />
+      </VStack>
 
-        {/* PIN Inputs */}
-        <HStack space={3} mb={20}>
-          {pin.map((value, index) => (
-            <Input
-              key={index}
-              ref={(ref) => (inputs.current[index] = ref)}
-              value={value}
-              onChangeText={(text) => handleChange(text.replace(/[^0-9]/g, "").slice(0, 1), index)}
-              keyboardType="numeric"
-              variant="unstyled"
-              secureTextEntry
-              textAlign="center"
-              fontSize="xl"
-              borderColor="#7A83F4"
-              borderWidth={1}
-              borderRadius={6}
-              w={38}
-              h={38}
-              maxLength={1}
-            />
+      {/* Submit Button */}
+      <Button
+        mt={10}
+        bg="#7B93C7"
+        _text={{ fontWeight: "600" }}
+        onPress={() => setShowConfirm(true)}
+      >
+        Continue
+      </Button>
 
-          ))}
-        </HStack>
-
-        {/* Continue Button */}
-        <Pressable
-          w="100%"
-          py={4}
-          onPress={handleContinue}
-          ml={5}
-        >
-          <ContinueButton/>
-        </Pressable>
-      </Center>
+      {/* Confirmation Modal */}
+      <Modal isOpen={showConfirm} onClose={() => setShowConfirm(false)}>
+        <Modal.Content maxWidth="350px">
+          <Modal.Header>Confirm Transfer</Modal.Header>
+          <Modal.Body>
+            <Text>Transfer to - {maskedNumber}</Text>
+            <Text mt={3}>Amount - {amount ? amount : "----"} Ks</Text>
+          </Modal.Body>
+          <Modal.Footer>
+            <HStack space={3}>
+              <Button variant="outline" onPress={() => setShowConfirm(false)}>
+                Cancel
+              </Button>
+              <Button bg="#7B93C7" onPress={handleConfirm}>
+                OK
+              </Button>
+            </HStack>
+          </Modal.Footer>
+        </Modal.Content>
+      </Modal>
     </Box>
   );
-};
-
-export default TransferPinScreen;
+}

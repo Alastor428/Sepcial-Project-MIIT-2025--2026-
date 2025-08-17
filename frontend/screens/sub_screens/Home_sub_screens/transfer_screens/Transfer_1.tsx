@@ -16,6 +16,7 @@ import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import type { RootStackParamList } from "../../../../navigation/HomeScreen_StackNavigator";
+import TransferAmountScreen from "./Transfer_2";
 
 type User = {
   name: string;
@@ -139,15 +140,14 @@ const TransferScreen: React.FC = () => {
             </Pressable>
           </HStack>
 
-          <Pressable
-            onPress={() => {
-              if (phoneNumber) {
-                navigation.navigate("TransferAmount");
-              }
-            }}
-            disabled={!phoneNumber}>
-              <SmallNextButton/>
-            </Pressable>
+          <SmallNextButton
+  onPress={() => {
+    if (phoneNumber) {
+      navigation.navigate("TransferAmount");
+    }
+  }}
+/>
+
         </Box>
       </Center>
     </Box>
@@ -155,3 +155,4 @@ const TransferScreen: React.FC = () => {
 };
 
 export default TransferScreen;
+
