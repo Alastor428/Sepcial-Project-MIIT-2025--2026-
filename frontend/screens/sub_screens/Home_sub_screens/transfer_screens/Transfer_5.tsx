@@ -1,9 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Box, Text, VStack, HStack, Pressable, Icon, Center, Spinner } from "native-base";
+import {
+  Box,
+  Text,
+  VStack,
+  HStack,
+  Pressable,
+  Icon,
+  Center,
+  Spinner,
+} from "native-base";
 import { Ionicons } from "@expo/vector-icons";
 import DoneButton from "../../../../components/done_button";
 import axios from "axios";
-import { useNavigation } from "@react-navigation/native"; 
+import { useNavigation } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import type { RootStackParamList } from "../../../../navigation/HomeScreen_StackNavigator";
 
@@ -17,7 +26,7 @@ export default function TransactionDetailsScreen() {
 
   useEffect(() => {
     axios
-      .get("http://192.168.99.96:5000/api/user/123/dashboard")
+      .get("http://192.168.68.112:5000/api/user/123/dashboard")
       .then((res) => {
         setUser(res.data);
         setLoading(false);
@@ -48,19 +57,19 @@ export default function TransactionDetailsScreen() {
   return (
     <Box flex={1} bg="#fff">
       {/* Header */}
-       <Box px={4} pt={12} pb={4} ml={-4}>
-              <HStack alignItems="center" px={4} pt={2} pb={4} >
-                      <Pressable onPress={() => navigation.goBack()}>
-                        <Icon as={Ionicons} name="arrow-undo" size={7} color="#7A83F4" />
-                      </Pressable>
-                      <Center flex={1}>
-                        <Text fontSize="24" fontWeight="bold" color="#7A83F4">
-                          Transaction Details
-                        </Text>
-                      </Center>
-                      <Box w={6} /> 
-                    </HStack>
-            </Box>
+      <Box px={4} pt={12} pb={4} ml={-4}>
+        <HStack alignItems="center" px={4} pt={2} pb={4}>
+          <Pressable onPress={() => navigation.goBack()}>
+            <Icon as={Ionicons} name="arrow-undo" size={7} color="#7A83F4" />
+          </Pressable>
+          <Center flex={1}>
+            <Text fontSize="24" fontWeight="bold" color="#7A83F4">
+              Transaction Details
+            </Text>
+          </Center>
+          <Box w={6} />
+        </HStack>
+      </Box>
 
       {/* Success Icon and Message */}
       <Center mt={6}>

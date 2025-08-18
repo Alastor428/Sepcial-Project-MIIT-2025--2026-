@@ -6,16 +6,15 @@ import {
   Text,
   HStack,
   Icon,
-  InputLeftAddon,
-  ChevronLeftIcon,
+  Pressable,
 } from "native-base";
 import QRCode from "react-native-qrcode-svg";
 import axios from "axios";
 import { Ionicons } from "@expo/vector-icons";
-import { Pressable } from "native-base";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import type { RootStackParamList } from "../../../../navigation/HomeScreen_StackNavigator";
+import DoneButton from "../../../../components/done_button";
 
 type User = {
   name: string;
@@ -23,24 +22,38 @@ type User = {
   userId: string;
 };
 
-type QRScreenNavigationProp = StackNavigationProp<RootStackParamList>;
+type QRScreenNavigationProp = StackNavigationProp<RootStackParamList, "QR">;
+type QRScreenRouteProp = RouteProp<RootStackParamList, "QR">;
 
 const QRScreen: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+
   const navigation = useNavigation<QRScreenNavigationProp>();
+  const route = useRoute<QRScreenRouteProp>();
+  const currentAmount = route.params?.currentAmount; // optional
+  const onDone = () => {
+    // To go back to main screen
+    navigation.navigate("HomeMain");
+  };
 
   useEffect(() => {
+    let mounted = true;
     axios
-      .get("http://192.168.99.96:5000/api/user/123/dashboard")
+      .get("http://192.168.68.112:5000/api/user/123/dashboard")
       .then((res) => {
-        setUser(res.data);
-        setLoading(false);
+        if (mounted) {
+          setUser(res.data);
+          setLoading(false);
+        }
       })
       .catch((err) => {
         console.error("Backend error:", err);
-        setLoading(false);
+        if (mounted) setLoading(false);
       });
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   if (loading) {
@@ -60,6 +73,11 @@ const QRScreen: React.FC = () => {
     );
   }
 
+  // Build the payload for the QR. Only include amount if provided.
+  const qrPayload = currentAmount
+    ? { ...user, amount: Number(currentAmount) }
+    : user;
+
   return (
     <Box flex={1} bg="#fff">
       {/* Upper Section */}
@@ -72,18 +90,19 @@ const QRScreen: React.FC = () => {
         px={6}
         height={180}
       >
-         <HStack alignItems="center" px={4} pt={2} pb={4} ml={-4}>
-                        <Pressable onPress={() => navigation.goBack()}>
-                          <Icon as={Ionicons} name="arrow-undo" size={7} color="#fff" />
-                        </Pressable>
-                        <Center flex={1}>
-                          <Text fontSize="32" fontWeight="bold" color="#fff">
-                            QR
-                          </Text>
-                        </Center>
-                        <Box w={6} /> 
-                      </HStack>
+        <HStack alignItems="center" px={4} pt={2} pb={4} ml={-4}>
+          <Pressable onPress={() => navigation.goBack()}>
+            <Icon as={Ionicons} name="arrow-undo" size={7} color="#fff" />
+          </Pressable>
+          <Center flex={1}>
+            <Text fontSize="32" fontWeight="bold" color="#fff">
+              QR
+            </Text>
+          </Center>
+          <Box w={6} />
+        </HStack>
       </Box>
+
       {/* QR Code Section */}
       <Box
         flex={1}
@@ -110,25 +129,40 @@ const QRScreen: React.FC = () => {
             fontSize="lg"
             color="#B9BDF0"
           >
-            {user.name}
-            {" - " + user.userId}
+            {user.name} {" - " + user.userId}
           </Text>
+
+          {currentAmount ? (
+            <Text
+              mt={0}
+              textAlign="center"
+              mb={2}
+              fontSize="lg"
+              color="#7A83F4"
+              fontWeight="bold"
+            >
+              Amount : {currentAmount} Ks
+            </Text>
+          ) : null}
+
           <Text
             mt={0}
             textAlign="center"
             mb={6}
             fontSize="lg"
             color="#7A83F4"
-            fontWeight={"bold"}
+            fontWeight="bold"
           >
             Scan to Pay Me
           </Text>
+
           <QRCode
-            value={JSON.stringify(user)}
+            value={JSON.stringify(qrPayload)}
             size={200}
             color="black"
             backgroundColor="white"
           />
+
           <Box mt={-6} px={4} py={2} borderRadius={10}>
             <HStack>
               <Pressable
@@ -142,6 +176,7 @@ const QRScreen: React.FC = () => {
                   Set Amount
                 </Text>
               </Pressable>
+
               <Pressable
                 onPress={() => navigation.navigate("SaveImage")}
                 mt={10}
@@ -155,6 +190,9 @@ const QRScreen: React.FC = () => {
           </Box>
         </Center>
       </Box>
+      <HStack justifyContent="center" mb={20} mt={-20} w="100%">
+        <DoneButton onPress={onDone} />
+      </HStack>
     </Box>
   );
 };

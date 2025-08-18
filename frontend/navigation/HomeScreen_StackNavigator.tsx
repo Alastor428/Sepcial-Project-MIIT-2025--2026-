@@ -13,7 +13,7 @@ function PlaceholderScreen() {
 
 export type RootStackParamList = {
   HomeMain: undefined;
-  QR: undefined;
+  QR: { currentAmount?: string } | undefined;
   SetAmountScreen: undefined;
   SaveImage: undefined;
   Transfer: undefined;
@@ -40,4 +40,4 @@ export default function HomeScreen_StackNavigator() {
       <Stack.Screen name="TopUp" component={PlaceholderScreen} />
     </Stack.Navigator>
   );
-} // navigation/HomeScreen_StackNavigator.tsx
+}

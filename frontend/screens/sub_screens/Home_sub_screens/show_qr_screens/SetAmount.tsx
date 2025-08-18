@@ -7,7 +7,6 @@ import {
   HStack,
   Icon,
   Pressable,
-  Input,
 } from "native-base";
 import { TextInput } from "react-native";
 import axios from "axios";
@@ -17,7 +16,7 @@ import type { StackNavigationProp } from "@react-navigation/stack";
 import type { RootStackParamList } from "../../../../navigation/HomeScreen_StackNavigator";
 import NextButton from "../../../../components/next_button";
 
-type QRScreenNavigationProp = StackNavigationProp<
+type SetAmountNavProp = StackNavigationProp<
   RootStackParamList,
   "SetAmountScreen"
 >;
@@ -32,20 +31,35 @@ const SetAmountScreen: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(true);
-  const navigation = useNavigation<QRScreenNavigationProp>();
+  const navigation = useNavigation<SetAmountNavProp>();
 
   useEffect(() => {
+    let mounted = true;
     axios
-      .get("http://192.168.99.96:5000/api/user/123/dashboard")
+      .get("http://192.168.68.112:5000/api/user/123/dashboard")
       .then((res) => {
-        setUser(res.data);
-        setLoading(false);
+        if (mounted) {
+          setUser(res.data);
+          setLoading(false);
+        }
       })
       .catch((err) => {
         console.error("Backend error:", err);
-        setLoading(false);
+        if (mounted) setLoading(false);
       });
+    return () => {
+      mounted = false;
+    };
   }, []);
+
+  const onNext = () => {
+    // I will update this amount section with backend after midtern
+    navigation.navigate({
+      name: "QR",
+      params: { currentAmount: amount || undefined },
+      merge: true,
+    });
+  };
 
   if (loading) {
     return (
@@ -61,16 +75,16 @@ const SetAmountScreen: React.FC = () => {
       {/* Header */}
       <Box bg="#fff" pt={20} pb={2} px={8} alignItems="flex-start">
         <HStack alignItems="center" px={4} pt={2} pb={4} ml={-4}>
-                        <Pressable onPress={() => navigation.goBack()}>
-                          <Icon as={Ionicons} name="arrow-undo" size={7} color="#7A83F4" />
-                        </Pressable>
-                        <Center flex={1}>
-                          <Text fontSize="24" fontWeight="bold" color="#7A83F4">
-                            Set Amount
-                          </Text>
-                        </Center>
-                        <Box w={6} /> 
-                      </HStack>
+          <Pressable onPress={() => navigation.goBack()}>
+            <Icon as={Ionicons} name="arrow-undo" size={7} color="#7A83F4" />
+          </Pressable>
+          <Center flex={1}>
+            <Text fontSize="24" fontWeight="bold" color="#7A83F4">
+              Set Amount
+            </Text>
+          </Center>
+          <Box w={6} />
+        </HStack>
       </Box>
 
       {/* Input Section */}
@@ -101,12 +115,13 @@ const SetAmountScreen: React.FC = () => {
               Amount
             </Text>
           </HStack>
-          <HStack mb={10}>
+
+          <HStack mb={10} alignItems="center">
             <TextInput
               style={{
                 flex: 1,
-                borderWidth: 0, // Removes outline
-                fontSize: 18, // Use numeric font size instead of "lg"
+                borderWidth: 0,
+                fontSize: 18,
                 paddingVertical: 8,
                 paddingHorizontal: 4,
                 borderBottomColor: "#7A83F4",
@@ -115,15 +130,23 @@ const SetAmountScreen: React.FC = () => {
               placeholder="Enter Amount"
               keyboardType="numeric"
               value={amount}
-              onChangeText={(text) => setAmount(text.replace(/[^0-9.]/g, ""))}
+              onChangeText={(text) => {
+                // allow digits + one dot
+                const cleaned = text.replace(/[^0-9.]/g, "");
+                const parts = cleaned.split(".");
+                const normalized =
+                  parts.length > 2
+                    ? parts[0] + "." + parts.slice(1).join("")
+                    : cleaned;
+                setAmount(normalized);
+              }}
             />
-            <Text fontSize="lg" color="#7A83F4" mr={3}>
+            <Text fontSize="lg" color="#7A83F4" ml={2}>
               Ks
             </Text>
           </HStack>
-          <Pressable onPress={() => navigation.navigate("QR")}>
-            <NextButton />
-          </Pressable>
+
+          <NextButton onPress={onNext} />
         </Box>
       </Center>
     </Box>

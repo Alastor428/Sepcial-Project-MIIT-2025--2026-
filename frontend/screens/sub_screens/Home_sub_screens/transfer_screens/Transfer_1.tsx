@@ -34,7 +34,7 @@ const TransferScreen: React.FC = () => {
 
   useEffect(() => {
     axios
-      .get("http://192.168.99.96:5000/api/user/123/dashboard")
+      .get("http://192.168.68.112:5000/api/user/123/dashboard")
       .then((res) => {
         setUser(res.data);
         setLoading(false);
@@ -49,7 +49,7 @@ const TransferScreen: React.FC = () => {
     return (
       <Center flex={1}>
         <Spinner />
-        <Text mt={2}>Loading  Transfer Page...</Text>
+        <Text mt={2}>Loading Transfer Page...</Text>
       </Center>
     );
   }
@@ -75,16 +75,16 @@ const TransferScreen: React.FC = () => {
         height={180}
       >
         <HStack alignItems="center" px={4} pt={2} pb={4} ml={-4}>
-                <Pressable onPress={() => navigation.goBack()}>
-                  <Icon as={Ionicons} name="arrow-undo" size={7} color="#fff" />
-                </Pressable>
-                <Center flex={1}>
-                  <Text fontSize="32" fontWeight="bold" color="#fff">
-                    Transfer
-                  </Text>
-                </Center>
-                <Box w={6} /> 
-              </HStack>
+          <Pressable onPress={() => navigation.goBack()}>
+            <Icon as={Ionicons} name="arrow-undo" size={7} color="#fff" />
+          </Pressable>
+          <Center flex={1}>
+            <Text fontSize="32" fontWeight="bold" color="#fff">
+              Transfer
+            </Text>
+          </Center>
+          <Box w={6} />
+        </HStack>
       </Box>
 
       {/* Input Section */}
@@ -141,13 +141,12 @@ const TransferScreen: React.FC = () => {
           </HStack>
 
           <SmallNextButton
-  onPress={() => {
-    if (phoneNumber) {
-      navigation.navigate("TransferAmount");
-    }
-  }}
-/>
-
+            onPress={() => {
+              if (phoneNumber) {
+                navigation.navigate("TransferAmount");
+              }
+            }}
+          />
         </Box>
       </Center>
     </Box>
@@ -155,4 +154,3 @@ const TransferScreen: React.FC = () => {
 };
 
 export default TransferScreen;
-
