@@ -14,21 +14,27 @@ import TransferButton from "../../../../components/transfer_button";
 
 export default function TransferAmountScreen({ navigation }: any) {
   const [amount, setAmount] = useState("");
-
+  const onTransfer = () => {
+    navigation.navigate({
+      name: "TransferConfirmScreen",
+      params: { currentAmount: amount || undefined },
+      merge: true,
+    });
+  };
   return (
     <Box flex={1} bg="#fff">
       <Box px={4} pt={12} pb={4} ml={-4}>
-        <HStack alignItems="center" px={4} pt={2} pb={4} >
-                <Pressable onPress={() => navigation.goBack()}>
-                  <Icon as={Ionicons} name="arrow-undo" size={7} color="#7A83F4" />
-                </Pressable>
-                <Center flex={1}>
-                  <Text fontSize="24" fontWeight="bold" color="#7A83F4">
-                    Transfer
-                  </Text>
-                </Center>
-                <Box w={6} /> 
-              </HStack>
+        <HStack alignItems="center" px={4} pt={2} pb={4}>
+          <Pressable onPress={() => navigation.goBack()}>
+            <Icon as={Ionicons} name="arrow-undo" size={7} color="#7A83F4" />
+          </Pressable>
+          <Center flex={1}>
+            <Text fontSize="24" fontWeight="bold" color="#7A83F4">
+              Transfer
+            </Text>
+          </Center>
+          <Box w={6} />
+        </HStack>
       </Box>
 
       {/* Recipient Info */}
@@ -52,14 +58,16 @@ export default function TransferAmountScreen({ navigation }: any) {
 
         {/* Amount Input */}
         <VStack mt={6} space={2}>
-          <Text color="#7A83F4" fontSize="lg">Amount (Ks)</Text>
+          <Text color="#7A83F4" fontSize="lg">
+            Amount (Ks)
+          </Text>
           <Input
             variant="unstyled"
             placeholder="Enter Amount"
             fontSize="lg"
             value={amount}
-            onChangeText={(text) =>
-              setAmount(text.replace(/[^0-9.]/g, "")) // allow only numbers and dot
+            onChangeText={
+              (text) => setAmount(text.replace(/[^0-9.]/g, "")) // allow only numbers and dot
             }
             keyboardType="numeric"
           />
@@ -76,15 +84,7 @@ export default function TransferAmountScreen({ navigation }: any) {
           </HStack>
         </VStack>
 
-        <Pressable
-          mt={6}
-          alignSelf="center"
-          px={8}
-          py={2}
-          onPress={() => console.log("Transfer amount:", amount)}
-        >
-          <TransferButton/>
-        </Pressable>
+        <TransferButton onPress={onTransfer} />
       </VStack>
     </Box>
   );

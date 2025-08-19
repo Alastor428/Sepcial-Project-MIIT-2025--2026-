@@ -16,7 +16,7 @@ import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import type { RootStackParamList } from "../../../../navigation/HomeScreen_StackNavigator";
-import TransferAmountScreen from "./Transfer_2";
+import TransferAmountScreen from "./TransferAmountScreen";
 
 type User = {
   name: string;
@@ -34,7 +34,7 @@ const TransferScreen: React.FC = () => {
 
   useEffect(() => {
     axios
-      .get("http://192.168.68.112:5000/api/user/123/dashboard")
+      .get("http://172.16.202.24:5000/api/user/123/dashboard")
       .then((res) => {
         setUser(res.data);
         setLoading(false);
@@ -143,7 +143,7 @@ const TransferScreen: React.FC = () => {
           <SmallNextButton
             onPress={() => {
               if (phoneNumber) {
-                navigation.navigate("TransferAmount");
+                navigation.navigate("TransferAmountScreen");
               }
             }}
           />

@@ -26,7 +26,7 @@ export default function TransactionDetailsScreen() {
 
   useEffect(() => {
     axios
-      .get("http://192.168.68.112:5000/api/user/123/dashboard")
+      .get("http://172.16.202.24:5000/api/user/123/dashboard")
       .then((res) => {
         setUser(res.data);
         setLoading(false);
