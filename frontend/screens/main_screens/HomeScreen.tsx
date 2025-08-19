@@ -22,7 +22,7 @@ export default function HomeScreen({ navigation }) {
 
   useEffect(() => {
     axios
-      .get("http://172.16.202.24:5000/api/user/123/dashboard")
+      .get("http://192.168.68.124:5000/api/user/123/dashboard")
       .then((res) => setUser(res.data))
       .catch((err) => console.error("Backend error:", err));
   }, []);

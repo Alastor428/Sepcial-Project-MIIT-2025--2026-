@@ -1,5 +1,6 @@
 export const userData = {
-  name: "Nigga Linn",
+  name: "Linn Pa Pa Khaing",
   userId: "123456789",
-  balance: 1000.0,
+  balance: 100000.0,
+  phone: "09696185624",
 };

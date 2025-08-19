@@ -1,4 +1,3 @@
-// TransferScreen.tsx
 import React, { useState, useEffect } from "react";
 import {
   Box,
@@ -34,7 +33,7 @@ const TransferScreen: React.FC = () => {
 
   useEffect(() => {
     axios
-      .get("http://172.16.202.24:5000/api/user/123/dashboard")
+      .get("http://192.168.68.124:5000/api/user/123/dashboard")
       .then((res) => {
         setUser(res.data);
         setLoading(false);
@@ -141,9 +140,27 @@ const TransferScreen: React.FC = () => {
           </HStack>
 
           <SmallNextButton
-            onPress={() => {
+            onPress={async () => {
               if (phoneNumber) {
-                navigation.navigate("TransferAmountScreen");
+                try {
+                  const res = await axios.get(
+                    `http://192.168.68.124:5000/api/user/check/${phoneNumber}`
+                  );
+
+                  if (res.data.valid) {
+                    navigation.navigate("TransferAmountScreen", {
+                      recipient: res.data.user,
+                    });
+                  }
+                } catch (error: any) {
+                  if (error.response && error.response.status === 404) {
+                    alert("No account found for this phone number.");
+                  } else {
+                    alert("Error connecting to server. Please try again.");
+                  }
+                }
+              } else {
+                alert("Please enter a phone number.");
               }
             }}
           />
