@@ -1,14 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
-import { Box, NativeBaseProvider } from "native-base";
+import { NativeBaseProvider } from "native-base";
 import { theme } from "./theme";
-import { Buttonpair } from "./components/cancle_ok_buttons";
 import BottomTabNavigator from "./navigation/BottomTabNavigator";
+import LoginScreen from "./auth/LoginScreen";
+
 export default function App() {
+  const [loggedInUser, setLoggedInUser] = useState<any>(null);
+
   return (
     <NativeBaseProvider theme={theme}>
       <NavigationContainer>
-        <BottomTabNavigator/>
+        {!loggedInUser ? (
+          <LoginScreen setLoggedInUser={setLoggedInUser} />
+        ) : (
+          <BottomTabNavigator loggedInUser={loggedInUser} />
+        )}
       </NavigationContainer>
     </NativeBaseProvider>
   );

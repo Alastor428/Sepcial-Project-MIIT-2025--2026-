@@ -1,39 +1,46 @@
 // TransferPinScreen.tsx
-import React, { useState, useRef } from "react";
-import { Box, Text, HStack, Center, Icon, Pressable, Input, Button } from "native-base";
+import React from "react";
+import { Box, Text, HStack, Center, Icon, Pressable } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import type { RootStackParamList } from "../../../../navigation/HomeScreen_StackNavigator";
-import ContinueButton from "../../../../components/continue_button";
+import PinInputSection from "../../../../components/pin_input_section";
 
-type NavigationProp = StackNavigationProp<RootStackParamList>;
+type TransferPinScreenNavigationProp = StackNavigationProp<
+  RootStackParamList,
+  "TransferPinScreen"
+>;
+type TransferPinScreenRouteProp = RouteProp<
+  RootStackParamList,
+  "TransferPinScreen"
+>;
 
 const TransferPinScreen: React.FC = () => {
-  const navigation = useNavigation<NavigationProp>();
-  const [pin, setPin] = useState<string[]>(["", "", "", "", "", ""]);
-  const inputs = useRef<Array<any>>([]);
+  const navigation = useNavigation<TransferPinScreenNavigationProp>();
+  const route = useRoute<TransferPinScreenRouteProp>();
 
-  const handleChange = (text: string, index: number) => {
-    const newPin = [...pin];
-    newPin[index] = text;
-    setPin(newPin);
+  const { sender, recipient, amount } = route.params;
 
-    if (text && index < 5) {
-      inputs.current[index + 1].focus();
+  const handlePinContinue = (enteredPin: string) => {
+    if (enteredPin !== sender.pin) {
+      alert("Incorrect PIN");
+      return;
     }
-  };
 
-  const handleBackspace = (key: string, index: number) => {
-    if (key === "Backspace" && !pin[index] && index > 0) {
-      inputs.current[index - 1].focus();
-    }
-  };
+    const amountNum = Number(amount);
+    sender.balance -= amountNum;
+    recipient.balance += amountNum;
 
-  const handleContinue = () => {
-    const enteredPin = pin.join("");
-    console.log("Entered Account PIN:", enteredPin);
-    // validate and navigate
+    const transactionData = {
+      sender,
+      recipient,
+      amount: amountNum,
+      date: new Date().toLocaleDateString(),
+      time: new Date().toLocaleTimeString(),
+    };
+
+    navigation.navigate("TransactionDetailsScreen", { transactionData });
   };
 
   return (
@@ -47,49 +54,10 @@ const TransferPinScreen: React.FC = () => {
             Transfer
           </Text>
         </Center>
-        <Box w={6} /> 
+        <Box w={6} />
       </HStack>
 
-      {/* Body */}
-      <Center flex={1} px={6} mt={-250}>
-        <Text fontSize="20" mb={85} color="#7A83F4">
-          Enter Your Pin
-        </Text>
-
-        {/* PIN Inputs */}
-        <HStack space={3} mb={20}>
-          {pin.map((value, index) => (
-            <Input
-              key={index}
-              ref={(ref) => (inputs.current[index] = ref)}
-              value={value}
-              onChangeText={(text) => handleChange(text.replace(/[^0-9]/g, "").slice(0, 1), index)}
-              keyboardType="numeric"
-              variant="unstyled"
-              secureTextEntry
-              textAlign="center"
-              fontSize="xl"
-              borderColor="#7A83F4"
-              borderWidth={1}
-              borderRadius={6}
-              w={38}
-              h={38}
-              maxLength={1}
-            />
-
-          ))}
-        </HStack>
-
-        {/* Continue Button */}
-        <Pressable
-          w="100%"
-          py={4}
-          onPress={handleContinue}
-          ml={5}
-        >
-          <ContinueButton/>
-        </Pressable>
-      </Center>
+      <PinInputSection onContinue={handlePinContinue} />
     </Box>
   );
 };

@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+// TransactionDetailsScreen.tsx
+import React from "react";
 import {
   Box,
   Text,
@@ -7,52 +8,29 @@ import {
   Pressable,
   Icon,
   Center,
-  Spinner,
 } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
-import DoneButton from "../../../../components/done_button";
-import axios from "axios";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import type { RootStackParamList } from "../../../../navigation/HomeScreen_StackNavigator";
+import DoneButton from "../../../../components/done_button";
 
-type TransactionDetailsScreenProp = StackNavigationProp<RootStackParamList>;
+type TransactionDetailsScreenNavigationProp = StackNavigationProp<
+  RootStackParamList,
+  "TransactionDetailsScreen"
+>;
+
+type TransactionDetailsScreenRouteProp = RouteProp<
+  RootStackParamList,
+  "TransactionDetailsScreen"
+>;
 
 export default function TransactionDetailsScreen() {
-  const navigation = useNavigation<TransactionDetailsScreenProp>();
+  const navigation = useNavigation<TransactionDetailsScreenNavigationProp>();
+  const route = useRoute<TransactionDetailsScreenRouteProp>();
 
-  const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
-
-  useEffect(() => {
-    axios
-      .get("http://192.168.68.124:5000/api/user/123/dashboard")
-      .then((res) => {
-        setUser(res.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Backend error:", err);
-        setLoading(false);
-      });
-  }, []);
-
-  if (loading) {
-    return (
-      <Center flex={1}>
-        <Spinner color="#7A83F4" />
-        <Text mt={2}>Loading Transaction...</Text>
-      </Center>
-    );
-  }
-
-  if (!user) {
-    return (
-      <Center flex={1}>
-        <Text color="red.500">Failed to load user data.</Text>
-      </Center>
-    );
-  }
+  const { transactionData } = route.params;
+  const { sender, recipient, amount, date, time } = transactionData;
 
   return (
     <Box flex={1} bg="#fff">
@@ -87,7 +65,7 @@ export default function TransactionDetailsScreen() {
           Payment Successful
         </Text>
         <Text mt={2} fontSize="2xl" fontWeight="bold" color="#7A83F4">
-          -1,000.00 Ks
+          -{amount.toLocaleString()} Ks
         </Text>
       </Center>
 
@@ -101,22 +79,22 @@ export default function TransactionDetailsScreen() {
 
         <HStack justifyContent="space-between">
           <Text color="#7A83F4">Date</Text>
-          <Text color="#7A83F4">16 July 2025</Text>
+          <Text color="#7A83F4">{date}</Text>
         </HStack>
 
         <HStack justifyContent="space-between">
           <Text color="#7A83F4">Time</Text>
-          <Text color="#7A83F4">11:11 PM</Text>
+          <Text color="#7A83F4">{time}</Text>
         </HStack>
 
         <HStack justifyContent="space-between">
-          <Text color="#7A83F4">Account ID</Text>
-          <Text color="#7A83F4">010********</Text>
+          <Text color="#7A83F4">From</Text>
+          <Text color="#7A83F4">{sender.name}</Text>
         </HStack>
 
         <HStack justifyContent="space-between">
-          <Text color="#7A83F4">Transfer To</Text>
-          <Text color="#7A83F4">(******321)</Text>
+          <Text color="#7A83F4">To</Text>
+          <Text color="#7A83F4">{recipient.name}</Text>
         </HStack>
       </VStack>
 
@@ -125,14 +103,16 @@ export default function TransactionDetailsScreen() {
       {/* Amount Section */}
       <HStack px={6} mt={4} justifyContent="space-between">
         <Text color="#7A83F4">Amount</Text>
-        <Text color="#7A83F4">-1,000.00 Ks</Text>
+        <Text color="#7A83F4">-{amount.toLocaleString()} Ks</Text>
       </HStack>
 
       {/* Done Button */}
       <Center mt={10}>
-        <Pressable onPress={() => navigation.navigate("HomeMain")}>
-          <DoneButton />
-        </Pressable>
+        <DoneButton
+          onPress={() =>
+            navigation.navigate("HomeMain", { loggedInUser: sender })
+          }
+        />
       </Center>
     </Box>
   );

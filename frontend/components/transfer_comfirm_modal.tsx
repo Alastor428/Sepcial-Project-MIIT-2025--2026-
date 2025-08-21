@@ -15,7 +15,6 @@ type TransferConfirmModalProps = {
   onConfirm: () => void;
 };
 
-// Mask last 3 digits of userId
 const maskId = (id: string) => {
   if (!id) return "";
   return "******" + id.slice(-3);
@@ -34,6 +33,7 @@ export default function TransferConfirmModal({
       onClose={onClose}
       style={{
         justifyContent: "center",
+
         backgroundColor: "white",
         width: 326,
         height: 348,
@@ -42,6 +42,8 @@ export default function TransferConfirmModal({
         borderWidth: 2,
         boxShadow: "0px 4px 10px #536FA0",
         shadowOpacity: 0.5,
+        margin: "auto",
+        marginTop: "40%",
       }}
     >
       <VStack flex={1} alignItems="center" space={6}>
@@ -49,7 +51,7 @@ export default function TransferConfirmModal({
           space={2}
           style={{
             width: "100%",
-            justifyContent: "space-between",
+            justifyContent: "center",
             marginTop: 80,
           }}
         >
@@ -104,6 +106,7 @@ export default function TransferConfirmModal({
             fontWeight="regular"
             color="#7A83F4"
             fontFamily={"inter"}
+            marginBottom={"30px"}
           >
             {amount ? `${amount} Ks` : "( ---- ) Ks"}
           </Text>

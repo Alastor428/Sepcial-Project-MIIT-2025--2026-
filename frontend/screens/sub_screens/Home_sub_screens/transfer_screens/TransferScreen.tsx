@@ -12,10 +12,9 @@ import {
 import { Ionicons, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
 import SmallNextButton from "../../../../components/small_next_button";
 import axios from "axios";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import type { RootStackParamList } from "../../../../navigation/HomeScreen_StackNavigator";
-import TransferAmountScreen from "./TransferAmountScreen";
 
 type User = {
   name: string;
@@ -24,16 +23,24 @@ type User = {
 };
 
 type TransferScreenNavigationProp = StackNavigationProp<RootStackParamList>;
+type TransferScreenRouteProp = RouteProp<RootStackParamList, "Transfer">;
+
 const TransferScreen: React.FC = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   const navigation = useNavigation<TransferScreenNavigationProp>();
+  const route = useRoute<TransferScreenRouteProp>();
+  const { loggedInUser } = route.params; // ✅ get logged-in user from params
 
   useEffect(() => {
+    if (!loggedInUser?.userId) return;
+
     axios
-      .get("http://192.168.68.124:5000/api/user/123/dashboard")
+      .get(
+        `http://192.168.68.111:5000/api/user/${loggedInUser.userId}/dashboard`
+      )
       .then((res) => {
         setUser(res.data);
         setLoading(false);
@@ -42,7 +49,7 @@ const TransferScreen: React.FC = () => {
         console.error("Backend error:", err);
         setLoading(false);
       });
-  }, []);
+  }, [loggedInUser]);
 
   if (loading) {
     return (
@@ -144,20 +151,20 @@ const TransferScreen: React.FC = () => {
               if (phoneNumber) {
                 try {
                   const res = await axios.get(
-                    `http://192.168.68.124:5000/api/user/check/${phoneNumber}`
+                    `http://192.168.68.111:5000/api/user/check/${phoneNumber}`
                   );
 
                   if (res.data.valid) {
                     navigation.navigate("TransferAmountScreen", {
                       recipient: res.data.user,
+                      sender: user,
+                      loggedInUser: user,
                     });
+                  } else {
+                    alert("No account found for this phone number.");
                   }
                 } catch (error: any) {
-                  if (error.response && error.response.status === 404) {
-                    alert("No account found for this phone number.");
-                  } else {
-                    alert("Error connecting to server. Please try again.");
-                  }
+                  alert("Error connecting to server. Please try again.");
                 }
               } else {
                 alert("Please enter a phone number.");

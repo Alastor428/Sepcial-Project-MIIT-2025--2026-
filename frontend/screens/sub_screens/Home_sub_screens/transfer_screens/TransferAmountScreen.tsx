@@ -8,13 +8,14 @@ import {
   Icon,
   Pressable,
   Center,
+  Divider,
 } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
 import TransferButton from "../../../../components/transfer_button";
 import TransferConfirmModal from "../../../../components/transfer_comfirm_modal";
 
 export default function TransferAmountScreen({ navigation, route }: any) {
-  const { recipient } = route.params; // recipient info passed from previous screen
+  const { recipient, loggedInUser } = route.params;
   const [amount, setAmount] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
 
@@ -36,11 +37,9 @@ export default function TransferAmountScreen({ navigation, route }: any) {
 
     if (numericAmount > recipient.balance) {
       alert("Insufficient balance. Please enter a lower amount.");
-      setAmount(""); // clear input field
+      setAmount("");
       return;
     }
-
-    // Show confirmation modal
     setShowConfirm(true);
   };
 
@@ -48,11 +47,11 @@ export default function TransferAmountScreen({ navigation, route }: any) {
   const handleConfirm = () => {
     setShowConfirm(false);
     navigation.navigate("TransferPinScreen", {
-      recipient,
-      amount,
+      sender: loggedInUser,
+      recipient: recipient,
+      amount: amount,
     });
-    setAmount(""); // clear input after success
-    // TODO: Call your backend API here to actually perform the transfer
+    setAmount("");
   };
 
   return (
@@ -104,6 +103,12 @@ export default function TransferAmountScreen({ navigation, route }: any) {
             onChangeText={(text) => setAmount(text.replace(/[^0-9.]/g, ""))}
             keyboardType="numeric"
           />
+          <Divider
+            width={"100%"}
+            alignSelf="center"
+            style={{ backgroundColor: "#7A83F4" }}
+            height={"1px"}
+          />
           <HStack justifyContent="space-between" mt={2}>
             <HStack alignItems="center" space={1}>
               <Text color="#7A83F4" fontSize="xs">
@@ -117,8 +122,9 @@ export default function TransferAmountScreen({ navigation, route }: any) {
           </HStack>
         </VStack>
 
-        {/* Transfer Button */}
-        <TransferButton onPress={onTransferPress} />
+        <HStack justifyContent="center" mt={6}>
+          <TransferButton onPress={onTransferPress} />
+        </HStack>
       </VStack>
 
       {/* confirm modal is called here and I need to change handle confirm  here */}

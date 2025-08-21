@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { JSX, useEffect, useState } from "react";
 import {
   Ionicons,
   MaterialIcons,
@@ -17,21 +17,43 @@ import {
 } from "native-base";
 import axios from "axios";
 
-export default function HomeScreen({ navigation }) {
-  const [user, setUser] = useState(null);
+type HomeScreenProps = {
+  navigation: any;
+  loggedInUser: any;
+};
+
+export default function HomeScreen({
+  navigation,
+  loggedInUser,
+}: HomeScreenProps) {
+  const [user, setUser] = useState(loggedInUser); // start with passed user
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    axios
-      .get("http://192.168.68.124:5000/api/user/123/dashboard")
-      .then((res) => setUser(res.data))
-      .catch((err) => console.error("Backend error:", err));
-  }, []);
+    if (!loggedInUser?.userId) return;
 
-  if (!user) {
+    const fetchUser = async () => {
+      try {
+        setLoading(true);
+        const res = await axios.get(
+          `http://192.168.68.111:5000/api/user/${loggedInUser.userId}/dashboard`
+        );
+        setUser(res.data);
+      } catch (err) {
+        console.error("Error fetching user in HomeScreen:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, [loggedInUser]);
+
+  if (loading || !user) {
     return (
       <Center flex={1}>
-        <Spinner size="lg" />
-        <Text mt={4}>Loading...</Text>
+        <Spinner />
+        <Text mt={2}>Loading Dashboard...</Text>
       </Center>
     );
   }
@@ -97,8 +119,9 @@ export default function HomeScreen({ navigation }) {
               />
             }
             label="Transfer"
-            onPress={() => navigation.navigate("Transfer")}
+            onPress={() => navigation.navigate("Transfer", { loggedInUser })}
           />
+
           <FunctionButton
             icon={
               <Icon
@@ -109,7 +132,12 @@ export default function HomeScreen({ navigation }) {
               />
             }
             label="QR"
-            onPress={() => navigation.navigate("QR")}
+            onPress={() =>
+              navigation.navigate("QR", {
+                loggedInUser,
+                currentAmount: undefined,
+              })
+            }
           />
         </HStack>
         <HStack space={70} justifyContent="center">
@@ -162,7 +190,15 @@ export default function HomeScreen({ navigation }) {
   );
 }
 
-function FunctionButton({ icon, label, onPress }) {
+function FunctionButton({
+  icon,
+  label,
+  onPress,
+}: {
+  icon: JSX.Element;
+  label: string;
+  onPress: () => void;
+}) {
   return (
     <Pressable
       width={106}

@@ -1,74 +1,21 @@
-import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Center,
-  Spinner,
-  Text,
-  HStack,
-  Icon,
-  Pressable,
-} from "native-base";
+import React, { useState } from "react";
+import { Box, Center, Text, HStack, Icon, Pressable } from "native-base";
 import { TextInput } from "react-native";
-import axios from "axios";
-import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
-import type { StackNavigationProp } from "@react-navigation/stack";
+import { StackScreenProps } from "@react-navigation/stack";
 import type { RootStackParamList } from "../../../../navigation/HomeScreen_StackNavigator";
 import NextButton from "../../../../components/next_button";
+import { Ionicons } from "@expo/vector-icons";
 
-type SetAmountNavProp = StackNavigationProp<
-  RootStackParamList,
-  "SetAmountScreen"
->;
+type Props = StackScreenProps<RootStackParamList, "SetAmountScreen">;
 
-type User = {
-  name: string;
-  balance: number;
-  userId: string;
-};
-
-const SetAmountScreen: React.FC = () => {
-  const [user, setUser] = useState<User | null>(null);
-  const [amount, setAmount] = useState("");
-  const [loading, setLoading] = useState(true);
-  const navigation = useNavigation<SetAmountNavProp>();
-
-  useEffect(() => {
-    let mounted = true;
-    axios
-      .get("http://192.168.68.112:5000/api/user/123/dashboard")
-      .then((res) => {
-        if (mounted) {
-          setUser(res.data);
-          setLoading(false);
-        }
-      })
-      .catch((err) => {
-        console.error("Backend error:", err);
-        if (mounted) setLoading(false);
-      });
-    return () => {
-      mounted = false;
-    };
-  }, []);
+export default function SetAmountScreen({ navigation, route }: Props) {
+  const { loggedInUser, currentAmount } = route.params;
+  const [amount, setAmount] = useState(currentAmount || "");
 
   const onNext = () => {
-    // I will update this amount section with backend after midtern
-    navigation.navigate({
-      name: "QR",
-      params: { currentAmount: amount || undefined },
-      merge: true,
-    });
+    if (!amount) return;
+    navigation.navigate("QR", { loggedInUser, currentAmount: amount });
   };
-
-  if (loading) {
-    return (
-      <Center flex={1}>
-        <Spinner />
-        <Text mt={2}>Loading Set Amount...</Text>
-      </Center>
-    );
-  }
 
   return (
     <Box flex={1} bg="#fff">
@@ -105,12 +52,7 @@ const SetAmountScreen: React.FC = () => {
           py={2}
           bg="#fff"
         >
-          <HStack
-            alignItems="left"
-            justifyContent="space-between"
-            width="100%"
-            mb={5}
-          >
+          <HStack width="100%" mb={5}>
             <Text fontSize="lg" color="#7A83F4" mr={3}>
               Amount
             </Text>
@@ -131,7 +73,6 @@ const SetAmountScreen: React.FC = () => {
               keyboardType="numeric"
               value={amount}
               onChangeText={(text) => {
-                // allow digits + one dot
                 const cleaned = text.replace(/[^0-9.]/g, "");
                 const parts = cleaned.split(".");
                 const normalized =
@@ -151,6 +92,4 @@ const SetAmountScreen: React.FC = () => {
       </Center>
     </Box>
   );
-};
-
-export default SetAmountScreen;
+}

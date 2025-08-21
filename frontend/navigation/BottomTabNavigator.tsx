@@ -1,11 +1,10 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
-import { Box, HStack, Pressable, Icon, Text } from "native-base";
-import HomeScreen from "../screens/main_screens/HomeScreen";
+import { Box, Pressable, Icon, Text } from "native-base";
 import HomeScreen_StackNavigator from "./HomeScreen_StackNavigator";
 
-function PlaceholderScreen({ route }) {
+function PlaceholderScreen({ route }: { route: any }) {
   return (
     <Box flex={1} alignItems="center" justifyContent="center">
       <Text fontSize={20}>{route.name} Screen</Text>
@@ -15,7 +14,7 @@ function PlaceholderScreen({ route }) {
 
 const Tab = createBottomTabNavigator();
 
-function CustomTabBar({ state, descriptors, navigation }) {
+function CustomTabBar({ state, descriptors, navigation }: any) {
   return (
     <Box
       flexDirection="row"
@@ -26,7 +25,7 @@ function CustomTabBar({ state, descriptors, navigation }) {
       alignItems="center"
       justifyContent="space-between"
     >
-      {state.routes.map((route, index) => {
+      {state.routes.map((route: any, index: number) => {
         const { options } = descriptors[route.key];
         const isFocused = state.index === index;
 
@@ -68,57 +67,6 @@ function CustomTabBar({ state, descriptors, navigation }) {
             />
           );
 
-        // Scan button
-        if (route.name === "Scan") {
-          return (
-            <Box
-              key={route.key}
-              flex={1}
-              alignItems="center"
-              justifyContent="center"
-              mx={3}
-            >
-              <Pressable
-                alignItems="center"
-                justifyContent="center"
-                onPress={() => navigation.navigate(route.name)}
-                style={{
-                  marginTop: -44,
-                  width: 60,
-                  height: 60,
-                  borderRadius: 32,
-                  backgroundColor: "#fff",
-                  borderWidth: 1.5,
-                  borderColor: "#7B93C7",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  shadowColor: "#000",
-                  shadowOffset: { width: 0, height: 4 },
-                  shadowOpacity: 0.15,
-                  shadowRadius: 8,
-                  elevation: 4,
-                }}
-              >
-                <Icon
-                  as={MaterialIcons}
-                  name="qr-code-scanner"
-                  size={"38"}
-                  color="#7B93C7"
-                />
-              </Pressable>
-              <Text
-                color={isFocused ? "#7B93C7" : "#aaa"}
-                fontSize={12}
-                fontWeight={isFocused ? "bold" : "normal"}
-                mt={1}
-              >
-                Scan
-              </Text>
-            </Box>
-          );
-        }
-
-        // Other tab buttons
         return (
           <Pressable
             key={route.key}
@@ -140,14 +88,23 @@ function CustomTabBar({ state, descriptors, navigation }) {
   );
 }
 
-export default function BottomTabNavigator() {
+interface BottomTabProps {
+  loggedInUser: any;
+}
+
+export default function BottomTabNavigator({ loggedInUser }: BottomTabProps) {
   return (
     <Tab.Navigator
       id={undefined}
       tabBar={(props) => <CustomTabBar {...props} />}
       screenOptions={{ headerShown: false }}
     >
-      <Tab.Screen name="Home" component={HomeScreen_StackNavigator} />
+      <Tab.Screen
+        name="Home"
+        children={() => (
+          <HomeScreen_StackNavigator loggedInUser={loggedInUser} />
+        )}
+      />
       <Tab.Screen name="History" component={PlaceholderScreen} />
       <Tab.Screen name="Scan" component={PlaceholderScreen} />
       <Tab.Screen name="Bank" component={PlaceholderScreen} />
