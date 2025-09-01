@@ -48,6 +48,47 @@ function CustomTabBar({ state, descriptors, navigation }: any) {
               color={isFocused ? "#7B93C7" : "#aaa"}
             />
           );
+
+
+        if (route.name === "Scan")
+          icon = (
+        <Pressable
+                alignItems="center"
+                justifyContent="center"
+                onPress={() => navigation.navigate(route.name)}
+                style={{
+                  marginTop: -44,
+                  width: 60,
+                  height: 60,
+                  borderRadius: 32,
+                  backgroundColor: "#fff",
+                  borderWidth: 1.5,
+                  borderColor: "#7B93C7",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  shadowColor: "#000",
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.15,
+                  shadowRadius: 8,
+                  elevation: 4,
+                }}
+              >
+                <Icon
+                  as={MaterialIcons}
+                  name="qr-code-scanner"
+                  size={"38"}
+                  color="#7B93C7"
+                />
+              </Pressable>
+            // <Icon
+            //   as={MaterialIcons}
+            //   name="qr-code-scanner"
+            //   size={6}
+            //   color={isFocused ? "#7B93C7" : "#aaa"}
+            // />
+          );
+
+
         if (route.name === "Bank")
           icon = (
             <Icon

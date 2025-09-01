@@ -7,7 +7,7 @@ import TransferScreen from "../screens/sub_screens/Home_sub_screens/transfer_scr
 import TransferAmountScreen from "../screens/sub_screens/Home_sub_screens/transfer_screens/TransferAmountScreen";
 import TransferConfirmModal from "../components/transfer_comfirm_modal";
 import CashInScreen from "../screens/sub_screens/Home_sub_screens/cash_in_screens/Cash-In";
-import PinEntryScreen from "../screens/sub_screens/Home_sub_screens/cash_in_screens/Cash-In(3)";
+import PinEntryScreen from "../screens/sub_screens/Home_sub_screens/cash_in_screens/Cash-In-pin-screen";
 import TransferPinScreen from "../screens/sub_screens/Home_sub_screens/transfer_screens/TransferPinScreen";
 import TransactionDetailsScreen from "../screens/sub_screens/Home_sub_screens/transfer_screens/Transfer_5";
 function PlaceholderScreen() {
@@ -47,8 +47,9 @@ export type RootStackParamList = {
   };
   TransactionDetailsScreen: { transactionData: any };
   CashOut: undefined;
-  CashIn: undefined;
-  PinEntry: undefined;
+  CashIn: { loggedInUser: { name: string; userId: string; balance: number }; 
+  currentAmount?: string };
+  PinEntryScreen: { sender: any; recipient: any; amount: number };
   QuickPay: undefined;
   TopUp: undefined;
 };
@@ -88,7 +89,7 @@ export default function HomeScreen_StackNavigator({
       />
       <Stack.Screen name="CashOut" component={PlaceholderScreen} />
       <Stack.Screen name="CashIn" component={CashInScreen} />
-      <Stack.Screen name="PinEntry" component={PinEntryScreen} />
+      <Stack.Screen name="PinEntryScreen" component={PinEntryScreen} />
       <Stack.Screen name="QuickPay" component={PlaceholderScreen} />
       <Stack.Screen name="TopUp" component={PlaceholderScreen} />
     </Stack.Navigator>

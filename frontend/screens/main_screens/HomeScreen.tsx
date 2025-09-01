@@ -36,7 +36,7 @@ export default function HomeScreen({
       try {
         setLoading(true);
         const res = await axios.get(
-          `http://192.168.68.118:5000/api/user/${loggedInUser.userId}/dashboard`
+          `http://192.168.99.96:5000/api/user/${loggedInUser.userId}/dashboard`
         );
         setUser(res.data);
       } catch (err) {
@@ -163,7 +163,7 @@ export default function HomeScreen({
               />
             }
             label="Cash In"
-            onPress={() => navigation.navigate("CashIn")}
+            onPress={() => navigation.navigate("CashIn", { loggedInUser })}
           />
         </HStack>
         <HStack space={70} justifyContent="center">

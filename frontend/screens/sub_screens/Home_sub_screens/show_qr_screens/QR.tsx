@@ -59,7 +59,7 @@ export default function QRScreen({ navigation, route }: Props) {
       {/* QR Code */}
       <HStack justifyContent="center" mt={4}>
         <Box width={328} height={486} bg="#fff" borderRadius={20} shadow={5}>
-          <Text textAlign="center" fontSize="lg" color="#B9BDF0">
+          <Text textAlign="center" fontSize="lg" color="#B9BDF0" mt={6}>
             {loggedInUser.name} - {loggedInUser.userId}
           </Text>
 
@@ -103,7 +103,7 @@ export default function QRScreen({ navigation, route }: Props) {
               borderRightWidth={2}
               mr={4}
             >
-              <Text color="#7A83F4" fontSize="md" fontWeight="bold">
+              <Text color="#7A83F4" fontSize="md" fontWeight="bold" mr={4}>
                 Set Amount
               </Text>
             </Pressable>
@@ -114,14 +114,14 @@ export default function QRScreen({ navigation, route }: Props) {
               </Text>
             </Pressable>
           </HStack>
-        </Box>
-      </HStack>
-
-      <HStack justifyContent="center" mb={10} mt={-20} w="100%">
+          <HStack justifyContent="center" w="100%" mt={"5%"}>
         <DoneButton
           onPress={() => navigation.navigate("HomeMain", { loggedInUser })}
         />
       </HStack>
+        </Box>
+      </HStack>
+
     </Box>
   );
 }

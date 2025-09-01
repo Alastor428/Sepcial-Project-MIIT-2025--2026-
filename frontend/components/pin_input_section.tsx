@@ -37,9 +37,6 @@ const PinInputSection: React.FC<PinInputSectionProps> = ({ onContinue }) => {
 
   return (
     <Center w="100%">
-      <Text fontSize="20" mb={6} color="#7A83F4">
-        Enter Your Pin
-      </Text>
 
       {/* PIN Inputs */}
       <HStack space={3} mb={6}>
@@ -72,7 +69,7 @@ const PinInputSection: React.FC<PinInputSectionProps> = ({ onContinue }) => {
       </HStack>
 
       {/* Continue Button */}
-      <Box w="100%" alignItems="center">
+      <Box w="100%" alignItems="center" mt={4}>
         <ContinueButton onPress={handleContinue} />
       </Box>
     </Center>

@@ -28,7 +28,7 @@ export default function PinScreen({
 
     try {
       const response = await axios.post(
-        "http://192.168.68.118:5000/api/user/login",
+        "http://192.168.99.96:5000/api/user/login",
         { phone, pin }
       );
 
@@ -42,14 +42,10 @@ export default function PinScreen({
   };
 
   return (
-    <Center flex={1} px={6}>
-      <VStack space={6} alignItems="center" w="100%">
-        <Text fontSize="2xl" fontWeight="bold" color="#7A83F4">
+    <Center flex={1} px={6} bg="white"> 
+      <VStack space={6} alignItems="center" w="100%" mt={-40}>
+        <Text fontSize="24" fontWeight="bold" color="#7A83F4" mb={85}>
           Enter Your PIN
-        </Text>
-
-        <Text fontSize="md" textAlign="center" color="gray.600">
-          Enter the 6-digit PIN for {phone}
         </Text>
 
         {error ? (
@@ -63,7 +59,8 @@ export default function PinScreen({
         <Button
           variant="ghost"
           onPress={onBack}
-          _text={{ color: "#7A83F4" }}
+          _text={{ color: "#7A83F4" ,fontWeight: "bold" , fontSize: 16, textDecorationLine: 'underline'
+          }}
           isLoading={isLoading}
         >
           Back to Phone Number

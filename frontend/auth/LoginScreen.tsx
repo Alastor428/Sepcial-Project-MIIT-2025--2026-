@@ -20,7 +20,7 @@ export default function LoginScreen({ setLoggedInUser }: LoginScreenProps) {
 
     try {
       const response = await axios.post(
-        "http://192.168.68.118:5000/api/user/login",
+        "http://192.168.99.96:5000/api/user/login",
         { phone, pin }
       );
       setLoggedInUser(response.data);

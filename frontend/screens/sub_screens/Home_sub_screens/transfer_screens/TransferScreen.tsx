@@ -39,7 +39,7 @@ const TransferScreen: React.FC = () => {
 
     axios
       .get(
-        `http://192.168.68.111:5000/api/user/${loggedInUser.userId}/dashboard`
+        `http://192.168.99.96:5000/api/user/${loggedInUser.userId}/dashboard`
       )
       .then((res) => {
         setUser(res.data);
@@ -151,7 +151,7 @@ const TransferScreen: React.FC = () => {
               if (phoneNumber) {
                 try {
                   const res = await axios.get(
-                    `http://192.168.68.111:5000/api/user/check/${phoneNumber}`
+                    `http://192.168.99.96:5000/api/user/check/${phoneNumber}`
                   );
 
                   if (res.data.valid) {

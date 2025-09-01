@@ -1,10 +1,5 @@
-import React, { useEffect, useState } from "react";
-import {
-  Ionicons,
-  MaterialIcons,
-  FontAwesome5,
-  Entypo,
-} from "@expo/vector-icons";
+import React, { useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
 import { TextInput } from "react-native";
 import {
   Box,
@@ -14,44 +9,38 @@ import {
   Pressable,
   Icon,
   Center,
-  Spinner,
 } from "native-base";
-import axios from "axios";
 import ContinueButton from "../../../../components/continue_button";
+import { RouteProp, useRoute } from "@react-navigation/native";
+import type { RootStackParamList } from "../../../../navigation/HomeScreen_StackNavigator";
+
+
+type CashInScreenRouteProp = RouteProp<RootStackParamList, "CashIn">;
 
 export default function CashInScreen({ navigation }) {
-  const [user, setUser] = useState(null);
-  const [amount, setAmount] = useState("");
+  const route = useRoute<CashInScreenRouteProp>();
 
-  function handleKeyPress(key: string) {
-    if (key === "back") {
-      setAmount((prev) => prev.slice(0, -1));
-    } else {
-      setAmount((prev) => prev + key);
-    }
-  }
+  const { loggedInUser, currentAmount } = route.params ?? {};
+  const [amount, setAmount] = useState(currentAmount || "");
 
-  const handleSubmit = () => {
-    console.log("Submitting:", amount);
-  };
-  useEffect(() => {
-    axios
-      .get("http://192.168.99.96:5000/api/user/123/dashboard")
-      .then((res) => setUser(res.data))
-      .catch((err) => console.error("Backend error:", err));
-  }, []);
+  if (!loggedInUser) {
+  return (
+    <Center flex={1}>
+      <Text>No user data available</Text>
+      <Pressable mt={4} onPress={() => navigation.navigate("HomeMain")}>
+        <Text color="#7A83F4" fontWeight="bold">
+          Go Back Home
+        </Text>
+      </Pressable>
+    </Center>
+  );
+}
 
-  if (!user) {
-    return (
-      <Center flex={1}>
-        <Spinner size="lg" />
-        <Text mt={4}>Loading...</Text>
-      </Center>
-    );
-  }
+  
 
   return (
     <Box flex={1} bg="white">
+      {/* Header */}
       <Box
         bg="#B9BDF0"
         borderBottomLeftRadius={20}
@@ -83,6 +72,8 @@ export default function CashInScreen({ navigation }) {
           </Text>
         </Center>
       </Box>
+
+      {/* Card */}
       <HStack justifyContent="center">
         <Box
           width={328}
@@ -111,7 +102,7 @@ export default function CashInScreen({ navigation }) {
                   color="#fff"
                 />
                 <Text color="#fff" fontSize={20} fontFamily={"inter"}>
-                  {user.name}
+                  {loggedInUser?.name}
                 </Text>
               </HStack>
 
@@ -121,10 +112,12 @@ export default function CashInScreen({ navigation }) {
                 fontFamily={"inter"}
                 opacity={"0.5"}
               >
-                ID-{" - " + user.userId}
+                ID- {loggedInUser?.userId}
               </Text>
             </VStack>
           </HStack>
+
+          {/* Transfer Amount */}
           <HStack justifyContent={"center"} alignItems={"center"}>
             <Text
               fontSize={16}
@@ -155,7 +148,6 @@ export default function CashInScreen({ navigation }) {
               keyboardType="numeric"
               value={amount}
               onChangeText={(text) => {
-                // allow digits + one dot
                 const cleaned = text.replace(/[^0-9.]/g, "");
                 const parts = cleaned.split(".");
                 const normalized =
@@ -169,6 +161,8 @@ export default function CashInScreen({ navigation }) {
               Ks
             </Text>
           </HStack>
+
+          {/* Balance */}
           <HStack justifyContent={"center"} alignItems={"center"}>
             <Text
               fontWeight={"Medium"}
@@ -178,13 +172,15 @@ export default function CashInScreen({ navigation }) {
               fontStyle={"inter"}
               opacity={0.5}
             >
-              Total Balance (Ks):{"" + user.balance}Ks
+              Total Balance (Ks): {loggedInUser?.balance} Ks
             </Text>
           </HStack>
         </Box>
       </HStack>
+
+      {/* Continue Button */}
       <HStack justifyContent="center" mt={-1}>
-        <ContinueButton onPress={() => navigation.navigate("PinEntry")} />
+        <ContinueButton onPress={() => navigation.navigate("PinEntryScreen")} />
       </HStack>
     </Box>
   );
