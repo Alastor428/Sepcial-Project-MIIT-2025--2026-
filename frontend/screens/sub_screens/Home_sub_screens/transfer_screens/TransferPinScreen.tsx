@@ -1,46 +1,49 @@
-// TransferPinScreen.tsx
-import React from "react";
-import { Box, Text, HStack, Center, Icon, Pressable } from "native-base";
+import React, { useState } from "react";
+import { Box, Text, HStack, Center, Icon, Pressable, Alert } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
+import { useNavigation, RouteProp, useRoute } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import type { RootStackParamList } from "../../../../navigation/HomeScreen_StackNavigator";
 import PinInputSection from "../../../../components/pin_input_section";
+import axios from "axios";
 
-type TransferPinScreenNavigationProp = StackNavigationProp<
+type NavigationProp = StackNavigationProp<
   RootStackParamList,
   "TransferPinScreen"
 >;
-type TransferPinScreenRouteProp = RouteProp<
-  RootStackParamList,
-  "TransferPinScreen"
->;
+type RouteProps = RouteProp<RootStackParamList, "TransferPinScreen">;
 
 const TransferPinScreen: React.FC = () => {
-  const navigation = useNavigation<TransferPinScreenNavigationProp>();
-  const route = useRoute<TransferPinScreenRouteProp>();
+  const navigation = useNavigation<NavigationProp>();
+  const route = useRoute<RouteProps>();
 
   const { sender, recipient, amount } = route.params;
+  const [pinError, setPinError] = useState("");
 
-  const handlePinContinue = (enteredPin: string) => {
+  const handlePinContinue = async (enteredPin: string) => {
     if (enteredPin !== sender.pin) {
-      alert("Incorrect PIN");
+      setPinError("Incorrect PIN");
       return;
     }
 
-    const amountNum = Number(amount);
-    sender.balance -= amountNum;
-    recipient.balance += amountNum;
+    // Simulate transfer using dummy backend
+    try {
+      // Update sender balance
+      sender.balance = sender.balance - Number(amount);
+      // Update recipient balance
+      recipient.balance = recipient.balance + Number(amount);
 
-    const transactionData = {
-      sender,
-      recipient,
-      amount: amountNum,
-      date: new Date().toLocaleDateString(),
-      time: new Date().toLocaleTimeString(),
-    };
+      console.log("Transfer successful!");
+      console.log("Sender new balance:", sender.balance);
+      console.log("Recipient new balance:", recipient.balance);
 
-    navigation.navigate("TransactionDetailsScreen", { transactionData });
+      // In real backend, you would call an API to save these balances
+
+      navigation.navigate("HomeMain", { loggedInUser: sender });
+    } catch (error) {
+      console.error(error);
+      setPinError("Transfer failed");
+    }
   };
 
   return (
@@ -56,6 +59,13 @@ const TransferPinScreen: React.FC = () => {
         </Center>
         <Box w={6} />
       </HStack>
+
+      <Center mt={20}>
+        <Text fontSize="16" mb={2}>
+          Enter your PIN to confirm transfer
+        </Text>
+        {pinError ? <Text color="red.500">{pinError}</Text> : null}
+      </Center>
 
       <PinInputSection onContinue={handlePinContinue} />
     </Box>

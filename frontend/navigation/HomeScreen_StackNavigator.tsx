@@ -45,15 +45,7 @@ export type RootStackParamList = {
     };
     amount: string | number;
   };
-  TransactionDetailsScreen: {
-    transactionData: {
-      sender: any;
-      recipient: any;
-      amount: number;
-      date: string;
-      time: string;
-    };
-  };
+  TransactionDetailsScreen: { transactionData: any };
   CashOut: undefined;
   CashIn: undefined;
   PinEntry: undefined;
