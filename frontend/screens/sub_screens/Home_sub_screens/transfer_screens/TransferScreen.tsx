@@ -15,6 +15,7 @@ import axios from "axios";
 import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import type { RootStackParamList } from "../../../../navigation/HomeScreen_StackNavigator";
+import ContactPicker from "../../../../components/contacts";
 
 type User = {
   name: string;
@@ -29,6 +30,7 @@ const TransferScreen: React.FC = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [amount, setAmount] = useState("");
 
   const navigation = useNavigation<TransferScreenNavigationProp>();
   const route = useRoute<TransferScreenRouteProp>();
@@ -136,14 +138,7 @@ const TransferScreen: React.FC = () => {
               keyboardType="numeric"
               width="85%"
             />
-            <Pressable>
-              <Icon
-                as={FontAwesome5}
-                name="address-book"
-                size={4}
-                color="#7A83F4"
-              />
-            </Pressable>
+            <ContactPicker onSelect={(num) => setAmount(num)} />
           </HStack>
 
           <SmallNextButton

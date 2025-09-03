@@ -163,7 +163,7 @@ export default function HomeScreen({
               />
             }
             label="Cash In"
-            onPress={() => navigation.navigate("CashIn", { loggedInUser })}
+            onPress={() => navigation.navigate("CashIn", { loggedInUser})}
           />
         </HStack>
         <HStack space={70} justifyContent="center">
@@ -182,7 +182,7 @@ export default function HomeScreen({
               />
             }
             label="Top-up"
-            onPress={() => navigation.navigate("TopUp")}
+            onPress={() => navigation.navigate("TopUp",{ loggedInUser })}
           />
         </HStack>
       </VStack>

@@ -20,6 +20,8 @@ import {
 import axios from "axios";
 import ContinueButton from "../../../../components/continue_button";
 import ContactPicker from "../../../../components/contacts";
+import TopUpPinScreen from "./top-up-pin-screen";
+
 export default function TopUpScreen() {
   const navigation = useNavigation();
   const [pin, setPin] = useState("");
@@ -82,6 +84,66 @@ export default function TopUpScreen() {
     Amount
   </Text>
 </HStack>
+    <HStack>
+      <Pressable
+        style={{
+          borderWidth: 2, 
+          borderColor: "#7A83F4",
+          width: 100,
+          height: 42,}}
+        mt="25px"
+        ml={"33px"}
+        alignItems="center"><Text mt={2} color={"#7A83F4"}>1000ks</Text></Pressable>
+        <Pressable
+        style={{
+          borderWidth: 2, 
+          borderColor: "#7A83F4",
+          width: 100,
+          height: 42,}}
+        mt="25px"  
+        ml={"12px"}       
+        alignItems="center"><Text mt={2} color={"#7A83F4"} >2000ks</Text></Pressable>
+        <Pressable
+        style={{
+          borderWidth: 2, 
+          borderColor: "#7A83F4",
+          width: 100,
+          height: 42,}}
+        mt="25px"  
+        ml={"12px"}       
+        alignItems="center"><Text mt={2} color={"#7A83F4"} >3000ks</Text></Pressable>
+    </HStack>
+    <HStack>
+      <Pressable
+        style={{
+          borderWidth: 2, 
+          borderColor: "#7A83F4",
+          width: 100,
+          height: 42,}}
+        mt="14px"
+        ml={"33px"}
+        alignItems="center"><Text mt={2} color={"#7A83F4"}>5000ks</Text></Pressable>
+        <Pressable
+        style={{
+          borderWidth: 2, 
+          borderColor: "#7A83F4",
+          width: 100,
+          height: 42,}}
+        mt="14px"  
+        ml={"12px"}       
+        alignItems="center"><Text mt={2} color={"#7A83F4"} >10000ks</Text></Pressable>
+        <Pressable
+        style={{
+          borderWidth: 2, 
+          borderColor: "#7A83F4",
+          width: 100,
+          height: 42,}}
+        mt="14px"  
+        ml="12px"       
+        alignItems="center"><Text mt={2} color={"#7A83F4"} >20000ks</Text></Pressable>
+    </HStack>
+    <Center mt={"32px"}><ContinueButton onPress={() => navigation.navigate("TopUpPinScreen", { amount })} /></Center>
+
     </Box>
   );
 }

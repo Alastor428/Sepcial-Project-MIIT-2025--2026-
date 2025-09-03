@@ -10,6 +10,8 @@ import CashInScreen from "../screens/sub_screens/Home_sub_screens/cash_in_screen
 import PinEntryScreen from "../screens/sub_screens/Home_sub_screens/cash_in_screens/Cash-In-pin-screen";
 import TransferPinScreen from "../screens/sub_screens/Home_sub_screens/transfer_screens/TransferPinScreen";
 import TransactionDetailsScreen from "../screens/sub_screens/Home_sub_screens/transfer_screens/Transfer_5";
+import TopUpScreen from "../screens/sub_screens/Home_sub_screens/top_up_screens/Top-up-(1)";
+import TopUpPinScreen from "../screens/sub_screens/Home_sub_screens/top_up_screens/top-up-pin-screen";
 function PlaceholderScreen() {
   return null;
 }
@@ -51,7 +53,28 @@ export type RootStackParamList = {
   currentAmount?: string };
   PinEntryScreen: { sender: any; recipient: any; amount: number };
   QuickPay: undefined;
-  TopUp: undefined;
+  TopUp: {recipient: any;
+    loggedInUser: any;
+    sender: {
+      name: string;
+      balance: number;
+      userId: string;
+    }; };
+    TopUpPinScreen: {
+    sender: {
+      name: string;
+      balance: number;
+      userId: string;
+      pin: string;
+    };
+    recipient: {
+      name: string;
+      balance: number;
+      userId: string;
+      pin: string;
+    };
+    amount: string | number;
+  };
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -91,7 +114,8 @@ export default function HomeScreen_StackNavigator({
       <Stack.Screen name="CashIn" component={CashInScreen} />
       <Stack.Screen name="PinEntryScreen" component={PinEntryScreen} />
       <Stack.Screen name="QuickPay" component={PlaceholderScreen} />
-      <Stack.Screen name="TopUp" component={PlaceholderScreen} />
+      <Stack.Screen name="TopUp" component={TopUpScreen} />
+      <Stack.Screen name="TopUpPinScreen" component={TopUpPinScreen} />
     </Stack.Navigator>
   );
 }
