@@ -3,6 +3,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { NativeBaseProvider } from "native-base";
 import { theme } from "./theme";
 import BottomTabNavigator from "./navigation/BottomTabNavigator";
+import AuthStack from "./navigation/LogIn_StackNavigator";
 import PhoneNumberScreen from "./auth/PhoneNumberScreen";
 import PinScreen from "./auth/PinScreen";
 
@@ -46,7 +47,7 @@ export default function App() {
     <NativeBaseProvider theme={theme}>
       <NavigationContainer>
         {!loggedInUser ? (
-          renderAuthScreen()
+          <AuthStack />
         ) : (
           <BottomTabNavigator loggedInUser={loggedInUser} />
         )}
