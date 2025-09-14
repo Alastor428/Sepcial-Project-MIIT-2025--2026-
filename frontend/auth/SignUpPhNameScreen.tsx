@@ -1,22 +1,25 @@
 import React, { useState } from "react";
 import { KeyboardAvoidingView, Platform, TextInput } from "react-native";
-import { 
-  Center, 
+import {
+  Center,
   VStack,
-  FormControl,  
-  Button, 
-  Text, 
-  Box, 
-  Icon, 
-  Pressable, 
-  HStack, 
+  FormControl,
+  Button,
+  Text,
+  Box,
+  Icon,
+  Pressable,
+  HStack,
 } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native"; 
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { AuthStackParamList } from "../navigation/LogIn_StackNavigator";
 import ContinueButton from "../components/continue_button";
-export default function SignUpScreen({navigation}: any) {
+
+type SignUpScreenProps = {
+  onBack: () => void;
+  onContinue: (data: { name: string; phone: string; pin: string }) => void;
+};
+
+export default function SignUpScreen({ onBack, onContinue }: SignUpScreenProps) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [pin, setPin] = useState("");
@@ -40,28 +43,36 @@ export default function SignUpScreen({navigation}: any) {
 
     setError("");
     console.log("Sign-up data:", { name, phone, pin });
-    // ✅ Save to backend or local storage here
+
+    // 👉 Call parent handler
+    onContinue({ name, phone, pin });
   };
 
   return (
     <Box flex={1} bg="white">
-      <HStack alignItems="center" px={4} pt={"55px"}  >
-          <Pressable onPress={() => navigation.goBack()}>
-            <Icon as={Ionicons} name="arrow-undo" size={7} color="#7A83F4" />
-          </Pressable>
-          <Center flex={1}>
-            <Text fontSize="32" fontWeight="bold" color="#7A83F4">
-              Create Account
-            </Text>
-          </Center>
-          <Box w={6} />
-        </HStack>
-      <HStack  flex={1} justifyContent="center" px={"28px"} pt={"54px"} bg={"white"} alignContent={"center"}>
-        
-        <VStack space={4} width="100%">
+      <HStack alignItems="center" px={4} pt={"55px"}>
+        <Pressable onPress={onBack}>
+          <Icon as={Ionicons} name="arrow-undo" size={7} color="#7A83F4" />
+        </Pressable>
+        <Center flex={1}>
+          <Text fontSize="32" fontWeight="bold" color="#7A83F4">
+            Create Account
+          </Text>
+        </Center>
+        <Box w={6} />
+      </HStack>
 
+      <HStack
+        flex={1}
+        justifyContent="center"
+        px={"28px"}
+        pt={"54px"}
+        bg={"white"}
+        alignContent={"center"}
+      >
+        <VStack space={4} width="100%">
           <FormControl>
-            <Text fontSize="16"  color="#7A83F4" mb={2}  fontFamily={"inter"} fontWeight={"semibold"}>
+            <Text fontSize="16" color="#7A83F4" mb={2} fontWeight="semibold">
               Phone Number
             </Text>
             <TextInput
@@ -70,35 +81,36 @@ export default function SignUpScreen({navigation}: any) {
               onChangeText={setPhone}
               keyboardType="phone-pad"
               style={{
-                backgroundColor: 'white',
+                backgroundColor: "white",
                 borderWidth: 1,
-                borderColor: '#7A83F4',
+                borderColor: "#7A83F4",
                 borderRadius: 5,
                 padding: 10,
-               }}
+              }}
             />
           </FormControl>
 
           <FormControl>
-            <Text fontSize="16"  color="#7A83F4" mb={2}  fontFamily={"inter"} fontWeight={"semibold"}>
+            <Text fontSize="16" color="#7A83F4" mb={2} fontWeight="semibold">
               Full Name
             </Text>
-            <TextInput 
-            placeholder="Enter your name" 
-            value={name} onChangeText={setName} 
-            keyboardType="default"
-            style={{
-                backgroundColor: 'white',
+            <TextInput
+              placeholder="Enter your name"
+              value={name}
+              onChangeText={setName}
+              keyboardType="default"
+              style={{
+                backgroundColor: "white",
                 borderWidth: 1,
-                borderColor: '#7A83F4',
+                borderColor: "#7A83F4",
                 borderRadius: 5,
                 padding: 10,
-               }}
+              }}
             />
           </FormControl>
 
           <FormControl>
-            <Text fontSize="16"  color="#7A83F4" mb={2}  fontFamily={"inter"} fontWeight={"semibold"}>
+            <Text fontSize="16" color="#7A83F4" mb={2} fontWeight="semibold">
               Create PIN
             </Text>
             <TextInput
@@ -108,12 +120,12 @@ export default function SignUpScreen({navigation}: any) {
               keyboardType="number-pad"
               secureTextEntry
               style={{
-                backgroundColor: 'white',
+                backgroundColor: "white",
                 borderWidth: 1,
-                borderColor: '#7A83F4',
+                borderColor: "#7A83F4",
                 borderRadius: 5,
                 padding: 10,
-               }}
+              }}
             />
           </FormControl>
 
@@ -121,7 +133,6 @@ export default function SignUpScreen({navigation}: any) {
 
           <ContinueButton onPress={handleSignUp} />
         </VStack>
-    
       </HStack>
     </Box>
   );

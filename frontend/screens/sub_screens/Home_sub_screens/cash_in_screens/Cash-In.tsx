@@ -1,3 +1,4 @@
+// CashInScreen.tsx
 import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { TextInput } from "react-native";
@@ -11,32 +12,53 @@ import {
   Center,
 } from "native-base";
 import ContinueButton from "../../../../components/continue_button";
-import { RouteProp, useRoute } from "@react-navigation/native";
+import { RouteProp, useRoute, useNavigation } from "@react-navigation/native";
 import type { RootStackParamList } from "../../../../navigation/HomeScreen_StackNavigator";
-
+import type { StackNavigationProp } from "@react-navigation/stack";
 
 type CashInScreenRouteProp = RouteProp<RootStackParamList, "CashIn">;
+type CashInScreenNavigationProp = StackNavigationProp<RootStackParamList, "CashIn">;
 
-export default function CashInScreen({ navigation }) {
+export default function CashInScreen() {
   const route = useRoute<CashInScreenRouteProp>();
+  const navigation = useNavigation<CashInScreenNavigationProp>();
 
   const { loggedInUser, currentAmount } = route.params ?? {};
-  const [amount, setAmount] = useState(currentAmount || "");
+  const [amount, setAmount] = useState(currentAmount?.toString() || "");
 
   if (!loggedInUser) {
-  return (
-    <Center flex={1}>
-      <Text>No user data available</Text>
-      <Pressable mt={4} onPress={() => navigation.navigate("HomeMain")}>
-        <Text color="#7A83F4" fontWeight="bold">
-          Go Back Home
-        </Text>
-      </Pressable>
-    </Center>
-  );
-}
+    return (
+      <Center flex={1}>
+        <Text>No user data available</Text>
+        <Pressable mt={4} onPress={() => navigation.navigate("HomeMain")}>
+          <Text color="#7A83F4" fontWeight="bold">
+            Go Back Home
+          </Text>
+        </Pressable>
+      </Center>
+    );
+  }
 
-  
+  const handleContinue = () => {
+    const amountNum = Number(amount);
+    if (!amount || isNaN(amountNum) || amountNum <= 0) {
+      alert("Enter a valid amount");
+      return;
+    }
+
+    const recipient = {
+      name: "Bank",
+      userId: "BANK-001",
+      balance: 0,
+      pin: "000000",
+    };
+
+    navigation.navigate("PinEntryScreen", {
+      sender: loggedInUser,
+      recipient,
+      amount: amountNum, // ✅ now a number
+    });
+  };
 
   return (
     <Box flex={1} bg="white">
@@ -110,7 +132,7 @@ export default function CashInScreen({ navigation }) {
                 color="#fff"
                 fontSize={14}
                 fontFamily={"inter"}
-                opacity={"0.5"}
+                opacity={0.5}
               >
                 ID- {loggedInUser?.userId}
               </Text>
@@ -180,7 +202,7 @@ export default function CashInScreen({ navigation }) {
 
       {/* Continue Button */}
       <HStack justifyContent="center" mt={-1}>
-        <ContinueButton onPress={() => navigation.navigate("PinEntryScreen")} />
+        <ContinueButton onPress={handleContinue} />
       </HStack>
     </Box>
   );

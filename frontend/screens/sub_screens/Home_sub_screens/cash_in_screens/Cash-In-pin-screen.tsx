@@ -1,136 +1,93 @@
-import React, { useState } from "react";
-import { useNavigation } from "@react-navigation/native";
-import {
-  Ionicons,
-} from "@expo/vector-icons";
-import {
-  Box,
-  VStack,
-  HStack,
-  Text,
-  Pressable,
-  Icon,
-  Input,
-  View,
-} from "native-base";
+// TransferPinScreen.tsx
+import React from "react";
+import { Box, Text, HStack, Center, Icon, Pressable } from "native-base";
+import { Ionicons } from "@expo/vector-icons";
+import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
+import type { StackNavigationProp } from "@react-navigation/stack";
+import type { RootStackParamList } from "../../../../navigation/HomeScreen_StackNavigator";
+import PinInputSection from "../../../../components/pin_input_section";
 
-export default function PinEntryScreen() {
-  const navigation = useNavigation();
-  const [pin, setPin] = useState("");
-  const[amount, setAmount] = useState("");
+// Navigation & Route types
+type TransferPinNavigationProp = StackNavigationProp<
+  RootStackParamList,
+  "TransferPinScreen"
+>;
+type TransferPinRouteProp = RouteProp<RootStackParamList, "TransferPinScreen">;
 
-  function handleKeyPress(key: string) {
-    if (key === "back") {
-      setPin((prev) => prev.slice(0, -1));
-    } else if (key === "enter") {
-      handleSubmit();
-    } else if (pin.length < 6) {
-      setPin((prev) => prev + key);
-    }
+export default function TransferPinScreen() {
+  const navigation = useNavigation<TransferPinNavigationProp>();
+  const route = useRoute<TransferPinRouteProp>();
+
+  const { sender, recipient, amount } = route.params ?? {};
+
+  // If params are missing, prevent crash
+  if (!sender || !recipient || !amount) {
+    return (
+      <Center flex={1} px={6}>
+        <Text fontSize="18" color="red.500" textAlign="center">
+          Error: Missing transfer data.
+        </Text>
+        <Pressable
+          mt={4}
+          px={4}
+          py={2}
+          bg="#7A83F4"
+          borderRadius={8}
+          onPress={() => navigation.goBack()}
+        >
+          <Text color="white" textAlign="center" fontWeight="bold">
+            Go Back
+          </Text>
+        </Pressable>
+      </Center>
+    );
   }
 
-  const handleSubmit = () => {
-    if (pin.length === 6) {
-      console.log("Submitting PIN:", pin);
+  const handlePinContinue = (enteredPin: string) => {
+    if (enteredPin !== sender.pin) {
+      alert("Incorrect PIN");
+      return;
     }
+
+    const amountNum = Number(amount);
+    sender.balance -= amountNum;
+    recipient.balance += amountNum;
+
+    const transactionData = {
+      sender,
+      recipient,
+      amount: amountNum,
+      date: new Date().toLocaleDateString(),
+      time: new Date().toLocaleTimeString(),
+    };
+
+    navigation.navigate("TransactionDetailsScreen", { transactionData });
   };
 
   return (
-    <Box flex={1} bg="#7A83F4" px={6} pt={16} pb={10}>
+    <Box flex={1} bg="#fff" safeArea>
       {/* Header */}
-      <HStack alignItems="center" mb={8}>
+      <HStack alignItems="center" px={4} pt={2} pb={4} mb={10}>
         <Pressable onPress={() => navigation.goBack()}>
-          <Icon as={Ionicons} name="arrow-back" size={6} color="#fff" mr={4} />
+          <Icon as={Ionicons} name="arrow-undo" size={7} color="#7A83F4" />
         </Pressable>
-        <Text color="#fff" fontSize="xl" fontWeight="bold">
-          Cash In
-        </Text>
+        <Center flex={1}>
+          <Text fontSize="24" fontWeight="bold" color="#7A83F4">
+            Transfer
+          </Text>
+        </Center>
+        <Box w={6} />
       </HStack>
-      <VStack alignItems="center" mt={4}>
-        <Text color="#fff" fontSize="lg" mb={8}>
-          Enter Your Pin
+
+      {/* Instruction */}
+      <Center>
+        <Text fontSize="20" color="#7A83F4" mb={16}>
+          Enter Your PIN
         </Text>
-        <HStack justifyContent="space-between" w="80%" mb={12}>
-          {[...Array(6)].map((_, index) => (
-            <Box
-              key={index}
-              w="12%"
-              h={12}
-              borderBottomWidth={2}
-              borderBottomColor="#fff"
-              justifyContent="center"
-              alignItems="center"
-            >
-              {pin[index] ? (
-                <Text color="#fff" fontSize="xl" fontWeight="bold">
-                  •
-                </Text>
-              ) : null}
-            </Box>
-          ))}
-        </HStack>
-        <Pressable
-          w="80%"
-          p={4}
-          bg="#536FA0"
-          borderRadius={8}
-          alignItems="center"
-          onPress={handleSubmit}
-          isDisabled={pin.length !== 6}
-          opacity={pin.length !== 6 ? 0.5 : 1}
-        >
-          <Text color="#fff" fontSize="lg" fontWeight="bold">
-            Continue
-          </Text>
-        </Pressable>
-      </VStack>
-      <HStack space={2} alignItems="center" w="90%" mt={-20}>
-      <Text  fontSize="lg" color="#7A83F4">
-        Amount
-      </Text>
-      <Input 
-      variant="unstyled"
-      placeholder="Enter Amount"
-      fontSize="lg"
-      value={amount}
-      onChangeText={(text) => setAmount(text.replace(/[^0-9.]/g, ""))}
-      keyboardType="numeric"
-      flex={1}
-      />
-          </HStack>
+      </Center>
+
+      {/* PIN Input */}
+      <PinInputSection onContinue={handlePinContinue} />
     </Box>
-  );
-}
-
-function KeypadButton({
-  label,
-  onPress,
-}: {
-  label: string;
-  onPress: () => void;
-}) {
-  if (!label) {
-    return <View style={{ width: "24%", aspectRatio: 1 }} />;
-  }
-
-  return (
-    <View style={{ width: "24%", aspectRatio: 1 }}>
-      <Pressable
-        bg="#F3F3F3"
-        borderRadius={12}
-        justifyContent="center"
-        alignItems="center"
-        flex={1}
-        onPress={onPress}
-      >
-        {label === "back" ? (
-          <Icon as={Ionicons} name="backspace" size={5} color="#333" />
-        ) : (
-          <Text fontSize="xl" color="#333">
-            {label}
-          </Text>
-        )}
-      </Pressable>
-    </View>
   );
 }

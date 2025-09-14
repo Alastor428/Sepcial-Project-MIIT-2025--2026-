@@ -4,22 +4,21 @@ import PinScreen from "../auth/PinScreen";
 import SignUpScreen from "../auth/SignUpPhNameScreen";
 
 export type AuthStackParamList = {
+  
   PhoneNumber: undefined;
   Pin: { phone: string };
-  SignUp: undefined;
+  SignUpScreen: undefined;
 };
+
 
 const Stack = createNativeStackNavigator<AuthStackParamList>();
 
-export default function AuthStack() {
+export default function AuthStackNavigator() {
   return (
-    <Stack.Navigator
-      id={undefined} screenOptions={{ headerShown: false }}
-      initialRouteName="PhoneNumber"
-    >
+    <Stack.Navigator id={undefined} screenOptions={{ headerShown: false }}>
       <Stack.Screen name="PhoneNumber" component={PhoneNumberScreen} />
+      <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
       <Stack.Screen name="Pin" component={PinScreen} />
-      <Stack.Screen name="SignUp" component={SignUpScreen} />
     </Stack.Navigator>
   );
 }
