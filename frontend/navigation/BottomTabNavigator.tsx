@@ -3,16 +3,25 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
 import { Box, Pressable, Icon, Text } from "native-base";
 import HomeScreen_StackNavigator from "./HomeScreen_StackNavigator";
+import ProfileScreen from "../screens/main_screens/Profile_Screen";
 
-function PlaceholderScreen({ route }: { route: any }) {
+type BottomTabParamList = {
+  Home: undefined;
+  History: undefined;
+  Scan: undefined;
+  Bank: undefined;
+  Profile: undefined;
+};
+
+const Tab = createBottomTabNavigator<BottomTabParamList>();
+
+function PlaceholderScreen({ route }: any) {
   return (
     <Box flex={1} alignItems="center" justifyContent="center">
       <Text fontSize={20}>{route.name} Screen</Text>
     </Box>
   );
 }
-
-const Tab = createBottomTabNavigator();
 
 function CustomTabBar({ state, descriptors, navigation }: any) {
   return (
@@ -29,30 +38,18 @@ function CustomTabBar({ state, descriptors, navigation }: any) {
         const { options } = descriptors[route.key];
         const isFocused = state.index === index;
 
-        let icon;
-        if (route.name === "Home")
-          icon = (
-            <Icon
-              as={Ionicons}
-              name="home"
-              size={6}
-              color={isFocused ? "#7B93C7" : "#aaa"}
-            />
-          );
-        if (route.name === "History")
-          icon = (
-            <Icon
-              as={MaterialIcons}
-              name="history"
-              size={6}
-              color={isFocused ? "#7B93C7" : "#aaa"}
-            />
-          );
+        let icon: any;
 
-
-        if (route.name === "Scan")
-          icon = (
-        <Pressable
+        switch (route.name) {
+          case "Home":
+            icon = <Icon as={Ionicons} name="home" size={6} color={isFocused ? "#7B93C7" : "#aaa"} />;
+            break;
+          case "History":
+            icon = <Icon as={MaterialIcons} name="history" size={6} color={isFocused ? "#7B93C7" : "#aaa"} />;
+            break;
+          case "Scan":
+            icon = (
+              <Pressable
                 alignItems="center"
                 justifyContent="center"
                 onPress={() => navigation.navigate(route.name)}
@@ -73,40 +70,17 @@ function CustomTabBar({ state, descriptors, navigation }: any) {
                   elevation: 4,
                 }}
               >
-                <Icon
-                  as={MaterialIcons}
-                  name="qr-code-scanner"
-                  size={"38"}
-                  color="#7B93C7"
-                />
+                <Icon as={MaterialIcons} name="qr-code-scanner" size={8} color="#7B93C7" />
               </Pressable>
-            // <Icon
-            //   as={MaterialIcons}
-            //   name="qr-code-scanner"
-            //   size={6}
-            //   color={isFocused ? "#7B93C7" : "#aaa"}
-            // />
-          );
-
-
-        if (route.name === "Bank")
-          icon = (
-            <Icon
-              as={FontAwesome5}
-              name="university"
-              size={5}
-              color={isFocused ? "#7B93C7" : "#aaa"}
-            />
-          );
-        if (route.name === "Profile")
-          icon = (
-            <Icon
-              as={Ionicons}
-              name="person"
-              size={6}
-              color={isFocused ? "#7B93C7" : "#aaa"}
-            />
-          );
+            );
+            break;
+          case "Bank":
+            icon = <Icon as={FontAwesome5} name="university" size={5} color={isFocused ? "#7B93C7" : "#aaa"} />;
+            break;
+          case "Profile":
+            icon = <Icon as={Ionicons} name="person" size={6} color={isFocused ? "#7B93C7" : "#aaa"} />;
+            break;
+        }
 
         return (
           <Pressable
@@ -137,19 +111,18 @@ export default function BottomTabNavigator({ loggedInUser }: BottomTabProps) {
   return (
     <Tab.Navigator
       id={undefined}
-      tabBar={(props) => <CustomTabBar {...props} />}
       screenOptions={{ headerShown: false }}
+      tabBar={(props) => <CustomTabBar {...props} />}
     >
-      <Tab.Screen
-        name="Home"
-        children={() => (
-          <HomeScreen_StackNavigator loggedInUser={loggedInUser} />
-        )}
-      />
+      <Tab.Screen name="Home">
+        {() => <HomeScreen_StackNavigator loggedInUser={loggedInUser} />}
+      </Tab.Screen>
       <Tab.Screen name="History" component={PlaceholderScreen} />
       <Tab.Screen name="Scan" component={PlaceholderScreen} />
       <Tab.Screen name="Bank" component={PlaceholderScreen} />
-      <Tab.Screen name="Profile" component={PlaceholderScreen} />
+      <Tab.Screen name="Profile">
+        {(props) => <ProfileScreen {...props} loggedInUser={loggedInUser} />}
+      </Tab.Screen>
     </Tab.Navigator>
   );
 }

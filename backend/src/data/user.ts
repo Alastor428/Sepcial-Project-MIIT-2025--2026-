@@ -5,6 +5,10 @@ export const users = [
     balance: 100000.0,
     phone: "09696185624",
     pin: "798112",
+    gender: "Female",
+    employment: "Student",
+    "dob": "2000-01-01",
+  "avatar": "https://example.com/avatar.jpg"
   },
 
   {
@@ -13,5 +17,7 @@ export const users = [
     balance: 50000.0,
     phone: "09265572697",
     pin: "270404",
+    gender: "Male",
+    employment: "Student",
   },
 ];

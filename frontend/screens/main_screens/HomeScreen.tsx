@@ -151,7 +151,7 @@ export default function HomeScreen({
               />
             }
             label="Cash Out"
-            onPress={() => navigation.navigate("CashOut")}
+            onPress={() => navigation.navigate("CashOut",{ loggedInUser})}
           />
           <FunctionButton
             icon={
@@ -170,7 +170,7 @@ export default function HomeScreen({
           <FunctionButton
             icon={<Icon as={Entypo} name="flash" size={6} color="#7B93C7" />}
             label="Quick pay"
-            onPress={() => navigation.navigate("QuickPay")}
+            onPress={() => navigation.navigate("QuickPay", { loggedInUser })}
           />
           <FunctionButton
             icon={
@@ -182,7 +182,7 @@ export default function HomeScreen({
               />
             }
             label="Top-up"
-            onPress={() => navigation.navigate("TopUp",{ loggedInUser })}
+            onPress={() => navigation.navigate("TopUpScreen",{ loggedInUser })}
           />
         </HStack>
       </VStack>

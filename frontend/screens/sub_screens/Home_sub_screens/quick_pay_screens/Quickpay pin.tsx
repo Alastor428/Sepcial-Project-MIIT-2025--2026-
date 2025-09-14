@@ -1,44 +1,65 @@
 import React from "react";
-import { Box, Text, HStack, Center, Pressable, Icon } from "native-base";
+import { Box, Text, HStack, Center, Icon, Pressable } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import type { RootStackParamList } from "../../../../navigation/HomeScreen_StackNavigator";
 import PinInputSection from "../../../../components/pin_input_section";
 
-type TopUpPinScreenNavigationProp = StackNavigationProp<
+// Navigation type
+type QuickPayPinScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
-  "TopUpPinScreen"
+  "QuickPayPinScreen"
 >;
-type TopUpPinScreenRouteProp = RouteProp<RootStackParamList, "TopUpPinScreen">;
 
-const TopUpPinScreen: React.FC = () => {
-  const navigation = useNavigation<TopUpPinScreenNavigationProp>();
-  const route = useRoute<TopUpPinScreenRouteProp>();
+// Route type
+type QuickPayPinScreenRouteProp = RouteProp<
+  RootStackParamList,
+  "QuickPayPinScreen"
+>;
 
-  const { sender, recipient, amount, phoneNumber } = route.params;
+// Sender type
+interface Sender {
+  studentId: string;
+  studentName: string;
+  contactNumber?: string;
+  pin: string;
+  balance: number;
+}
+
+// Recipient type
+interface Recipient {
+  userId: string;
+  name: string;
+}
+
+const QuickPayPinScreen: React.FC = () => {
+  const navigation = useNavigation<QuickPayPinScreenNavigationProp>();
+  const route = useRoute<QuickPayPinScreenRouteProp>();
+
+  // Destructure the passed transactionData
+  const { transactionData } = route.params;
+  const { sender, recipient, amount } = transactionData;
 
   const handlePinContinue = (enteredPin: string) => {
-    // Simulate PIN check
-    if (enteredPin !== sender.pin) {
+    // Check PIN directly from sender
+    if (enteredPin.trim() !== sender.pin.trim()) {
       alert("Incorrect PIN");
       return;
     }
 
-    // Simulate transaction data
-    const transactionData = {
+    // Build transaction data for next screen
+    const transactionToSend = {
       sender,
-      recipient: {
-        userId: recipient.userId,
-        name: recipient.name || phoneNumber, // always string
-      },
-      amount: Number(amount),
+      recipient,
+      amount: Number(amount), // ensure number type
       date: new Date().toLocaleDateString(),
       time: new Date().toLocaleTimeString(),
     };
 
-    // Navigate to TransactionDetailsScreen
-    navigation.navigate("TransactionDetailsScreen", { transactionData });
+    navigation.navigate("TransactionDetailsScreen", {
+      transactionData: transactionToSend,
+    });
   };
 
   return (
@@ -50,13 +71,13 @@ const TopUpPinScreen: React.FC = () => {
         </Pressable>
         <Center flex={1}>
           <Text fontSize="24" fontWeight="bold" color="#7A83F4">
-            Top Up
+            Quick Pay
           </Text>
         </Center>
         <Box w={6} />
       </HStack>
 
-      {/* Instruction */}
+      {/* Title */}
       <Center>
         <Text fontSize="20" color="#7A83F4" mb={16}>
           Enter Your PIN
@@ -69,4 +90,4 @@ const TopUpPinScreen: React.FC = () => {
   );
 };
 
-export default TopUpPinScreen;
+export default QuickPayPinScreen;

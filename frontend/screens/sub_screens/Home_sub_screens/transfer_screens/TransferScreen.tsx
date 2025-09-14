@@ -16,7 +16,7 @@ import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import type { RootStackParamList } from "../../../../navigation/HomeScreen_StackNavigator";
 import ContactPicker from "../../../../components/contacts";
-
+import { TextInput } from "react-native";
 type User = {
   name: string;
   balance: number;
@@ -34,7 +34,7 @@ const TransferScreen: React.FC = () => {
 
   const navigation = useNavigation<TransferScreenNavigationProp>();
   const route = useRoute<TransferScreenRouteProp>();
-  const { loggedInUser } = route.params; // ✅ get logged-in user from params
+  const { loggedInUser } = route.params; 
 
   useEffect(() => {
     if (!loggedInUser?.userId) return;
@@ -126,18 +126,24 @@ const TransferScreen: React.FC = () => {
             alignItems="center"
             mb={5}
             mt={2}
-          >
-            <Input
+          ><TextInput
+              style={{
+                flex: 1,
+                fontSize: 18,
+                paddingVertical: 8,
+                paddingHorizontal: 4,
+                marginRight: 8,
+              }}
+              placeholder="Enter Phone Number"
+              keyboardType="phone-pad"
               value={phoneNumber}
               onChangeText={(text) =>
                 setPhoneNumber(text.replace(/[^0-9]/g, ""))
               }
-              variant="unstyled"
-              placeholder="Enter phone number"
-              fontSize="md"
-              keyboardType="numeric"
-              width="85%"
+              
             />
+          
+            {/* ✅ Contact picker fills TextInput */}
             <ContactPicker onSelect={(num) => setAmount(num)} />
           </HStack>
 
