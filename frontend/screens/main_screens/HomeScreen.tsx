@@ -36,7 +36,7 @@ export default function HomeScreen({
       try {
         setLoading(true);
         const res = await axios.get(
-          `http://192.168.99.96:5000/api/user/${loggedInUser.userId}/dashboard`
+          `http://172.16.206.192:5000/api/user/${loggedInUser.userId}/dashboard`
         );
         setUser(res.data);
       } catch (err) {

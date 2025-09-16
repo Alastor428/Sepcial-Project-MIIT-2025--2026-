@@ -19,6 +19,7 @@
     "axios": "^1.11.0",
     "expo": "^53.0.13",
     "expo-contacts": "^14.2.5",
+    "expo-image-picker": "~16.1.4",
     "fbjs": "^3.0.5",
     "firebase": "^12.2.1",
     "native-base": "^3.4.28",

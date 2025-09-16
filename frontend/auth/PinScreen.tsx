@@ -28,7 +28,7 @@ export default function PinScreen({
 
     try {
       const response = await axios.post(
-        "http://192.168.99.96:5000/api/user/login",
+        "http://172.16.206.192:5000/api/user/login",
         { phone, pin }
       );
 
