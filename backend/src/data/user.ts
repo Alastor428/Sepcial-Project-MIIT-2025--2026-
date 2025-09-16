@@ -7,7 +7,7 @@ export const users = [
     pin: "798112",
     gender: "Female",
     employment: "Student",
-    "dob": "2000-01-01",
+    dob: "2005-2-9",
   "avatar": "https://example.com/avatar.jpg"
   },
 
