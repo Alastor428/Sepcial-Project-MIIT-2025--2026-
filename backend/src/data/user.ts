@@ -7,8 +7,9 @@ export const users = [
     pin: "798112",
     gender: "Female",
     employment: "Student",
-    dob: "2005-2-9",
-  "avatar": "https://example.com/avatar.jpg"
+    dob: "2005-02-09",
+    nrc: "13/MaSaTa(N)069814",
+    avatar: "https://example.com/avatar.jpg",
   },
 
   {
@@ -19,5 +20,8 @@ export const users = [
     pin: "270404",
     gender: "Male",
     employment: "Student",
+    dob: "2004-05-17",
+    nrc: "12/KaLaTa(N)123456",
+    avatar: "https://example.com/avatar2.jpg",
   },
 ];

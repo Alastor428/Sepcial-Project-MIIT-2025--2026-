@@ -31,7 +31,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ loggedInUser, navigation 
       .get(`http://172.16.206.192:5000/api/user/${loggedInUser.id}/profile`)
       .then((res) => {
         setUserData(res.data);
-        setProfileImage(res.data.avatar || null); // ✅ Load avatar if exists
+        setProfileImage(res.data.avatar || null);
         setLoading(false);
       })
       .catch((err) => {
@@ -52,7 +52,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ loggedInUser, navigation 
     }
   };
 
-  // ✅ Pick image from phone
+  // Pick image from phone
   const pickImage = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permissionResult.granted) {
@@ -70,6 +70,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ loggedInUser, navigation 
     if (!result.canceled) {
       const selectedImage = result.assets[0].uri;
       setProfileImage(selectedImage);
+
       const formData = new FormData();
       formData.append("avatar", {
         uri: selectedImage,
@@ -82,9 +83,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ loggedInUser, navigation 
           `http://172.16.206.192:5000/api/user/${loggedInUser.id}/upload-avatar`,
           formData,
           {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
+            headers: { "Content-Type": "multipart/form-data" },
           }
         );
       } catch (error) {
@@ -124,7 +123,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ loggedInUser, navigation 
               p={1}
               borderWidth={2}
               borderColor="white"
-              onPress={pickImage} // ✅ open gallery
+              onPress={pickImage}
             >
               <Icon as={Ionicons} name="camera" size={5} color="#7A83F4" />
             </Pressable>
@@ -140,7 +139,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ loggedInUser, navigation 
       </Box>
 
       {/* Info Section */}
-      <Box mx={8} mt={6} shadow={4} bg="white">
+      <Box mx={8} mt={6} shadow={4} bg="white" borderRadius={8}>
         <VStack space={0}>
           <Pressable>
             <HStack alignItems="center" space={3} height={45} px={4}>
@@ -173,7 +172,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ loggedInUser, navigation 
               <Text fontSize="20" fontWeight="700" color="#7A83F4">
                 Employment
               </Text>
-              <Text fontSize="20" color="#B9BDF0" fontWeight="700" ml={5}>
+              <Text fontSize="20" color="#B9BDF0" fontWeight="700" ml={10}>
                 {user?.employment || "N/A"}
               </Text>
             </HStack>
@@ -186,21 +185,33 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ loggedInUser, navigation 
               <Text fontSize="20" fontWeight="700" color="#7A83F4">
                 Date of Birth
               </Text>
-              <Text fontSize="20" color="#7A83F4" fontWeight="700" opacity={0.5} ml={4} mr={"24px"}>
+              <Text fontSize="20" color="#7A83F4" fontWeight="700" opacity={0.5} ml={3} mr={"8px"}>
                 {user?.dob || "N/A"}
               </Text>
               <Icon as={Ionicons} name="chevron-forward" size={5} color="#7A83F4" />
             </HStack>
           </Pressable>
+          <Divider bg="#B9BDF0" opacity={0.2} />
+
+          <Pressable>
+            <HStack alignItems="center" space={3} height={45} px={4}>
+              <Text fontSize="20" fontWeight="700" color="#7A83F4">
+                NRC
+              </Text>
+              <Text fontSize="20" color="#B9BDF0" fontWeight="700" ml={10}>
+                {user?.NRC || user?.nrc || "N/A"}
+              </Text>
+            </HStack>
+          </Pressable>
 
           <Divider bg="#B9BDF0" opacity={0.2} />
 
-          <Pressable height={45} px={4}>
+          <Pressable height={45} px={4} onPress={() => navigation.navigate("Setting")}>
             <HStack>
               <Text fontSize="20" fontWeight="700" color="#7A83F4" mr={"210px"}>
                 Setting
               </Text>
-              <Icon as={Ionicons} name="chevron-forward" size={5} color="#7A83F4" mt={"10px"}/>
+              <Icon as={Ionicons} name="chevron-forward" size={5} color="#7A83F4" mt={"10px"} />
             </HStack>
           </Pressable>
 
@@ -208,10 +219,10 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ loggedInUser, navigation 
 
           <Pressable onPress={handleLogout}>
             <HStack height={45} px={4}>
-              <Text fontSize="20" fontWeight="700" color="#7A83F4" mr={"210px"}>
-                Logout
+              <Text fontSize="20" fontWeight="700" color="#7A83F4" mr={"206px"}>
+                Log Out
               </Text>
-              <Icon as={Ionicons} name="chevron-forward" size={5} color="#7A83F4" mt={"10px"}/>
+              <Icon as={Ionicons} name="chevron-forward" size={5} color="#7A83F4" mt={"10px"} />
             </HStack>
           </Pressable>
         </VStack>
