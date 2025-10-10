@@ -3,8 +3,8 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
 import { Box, Pressable, Icon, Text } from "native-base";
 import HomeScreen_StackNavigator from "./HomeScreen_StackNavigator";
-import ProfileScreen from "../screens/main_screens/Profile_Screen";
 import ProfileScreen_StackNavigator from "./Profile_StackNavigator";
+import HistoryScreen from "../screens/main_screens/HistoryScreen";
 
 type BottomTabParamList = {
   Home: undefined;
@@ -118,7 +118,10 @@ export default function BottomTabNavigator({ loggedInUser }: BottomTabProps) {
       <Tab.Screen name="Home">
         {() => <HomeScreen_StackNavigator loggedInUser={loggedInUser} />}
       </Tab.Screen>
-      <Tab.Screen name="History" component={PlaceholderScreen} />
+      <Tab.Screen name="History">
+        {(props) => <HistoryScreen {...props} loggedInUser={loggedInUser} />}
+      </Tab.Screen>
+
       <Tab.Screen name="Scan" component={PlaceholderScreen} />
       <Tab.Screen name="Bank" component={PlaceholderScreen} />
       <Tab.Screen name="Profile">

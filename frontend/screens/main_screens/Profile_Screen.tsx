@@ -28,7 +28,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ loggedInUser, navigation 
 
   useEffect(() => {
     axios
-      .get(`http://172.16.206.192:5000/api/user/${loggedInUser.id}/profile`)
+      .get(`http://192.168.99.96:5000/api/user/${loggedInUser.id}/profile`)
       .then((res) => {
         setUserData(res.data);
         setProfileImage(res.data.avatar || null);
@@ -80,7 +80,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ loggedInUser, navigation 
 
       try {
         await axios.post(
-          `http://172.16.206.192:5000/api/user/${loggedInUser.id}/upload-avatar`,
+          `http://192.168.99.96:5000/api/user/${loggedInUser.id}/upload-avatar`,
           formData,
           {
             headers: { "Content-Type": "multipart/form-data" },

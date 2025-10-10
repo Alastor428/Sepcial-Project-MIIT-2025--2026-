@@ -11,7 +11,11 @@ import {
   Divider
 } from "native-base";
 
-const SettingsScreen = ({ navigation }) => {
+type SettingsScreenProps = {
+  navigation: any;
+};
+
+const SettingsScreen = ({ navigation }: SettingsScreenProps) => {
   return (
     <Box flex={1} bg="white" safeArea>
       {/* Header with back button and title */}
@@ -82,7 +86,7 @@ const SettingsScreen = ({ navigation }) => {
              borderColor="#7A83F4"
             _pressed={{ borderColor: "#7A83F4"}}
           >
-            <Text fontSize="16" fontWeight="600" color="#7A83F4" fontFamily="inter" fontStyle="#7A83F4">
+            <Text fontSize="16" fontWeight="600" color="#7A83F4" fontFamily="inter">
               Reset Mobile Number
             </Text>
             <Icon as={Ionicons} name="chevron-forward" size={6} color="#7A83F4" />

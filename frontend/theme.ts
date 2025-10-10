@@ -12,5 +12,16 @@ export const theme = extendTheme({
         },
       },
     },
+    Select: {
+      baseStyle: {
+        _web: {
+          outlineWidth: 0,
+          style: { boxShadow: `none` },
+        },
+        _focus: {
+          outlineWidth: 0, // ✅ fixes error globally
+        },
+      },
+    },
   },
 });

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { NativeBaseProvider } from "native-base";
 import { theme } from "./theme";
+import axios from "axios";
 
 // Screens
 import PhoneNumberScreen from "./auth/PhoneNumberScreen";
@@ -16,6 +17,7 @@ export default function App() {
     "phone" | "pin" | "signup" | "nrc"
   >("phone");
   const [phoneNumber, setPhoneNumber] = useState<string>("");
+  const [signUpData, setSignUpData] = useState<any>(null);
 
   // Step 1: After entering phone number → move to Pin screen
   const handlePhoneSubmit = (phone: string) => {
@@ -49,14 +51,34 @@ export default function App() {
       return (
         <SignUpScreen
           onBack={() => setCurrentScreen("phone")}
-          onContinue={() => setCurrentScreen("nrc")} // after signup → NRC
+          onContinue={(data) => {
+            setSignUpData(data);
+            setCurrentScreen("nrc");
+          }} // after signup → NRC
         />
       );
     } else if (currentScreen === "nrc") {
       return (
         <NRCScreen
           onBack={() => setCurrentScreen("signup")}
-          onContinue={() => setCurrentScreen("phone")} // after NRC → back to login
+          signUpData={signUpData}
+          onContinue={async (nrcData) => {
+            try {
+              const fullData = {
+                ...signUpData,
+                nrc: nrcData.nrc,
+                dob: nrcData.birthday.split('/').reverse().join('-'), // convert to YYYY-MM-DD
+                gender: nrcData.gender.charAt(0).toUpperCase() + nrcData.gender.slice(1), // Male, Female
+                employment: nrcData.job,
+              };
+              await axios.post("http://192.168.99.96:5000/api/user/register", fullData);
+              setCurrentScreen("phone");
+              setSignUpData(null);
+            } catch (error) {
+              console.error("Registration error:", error);
+              // Handle error, perhaps show alert
+            }
+          }}
         />
       );
     } else if (currentScreen === "pin") {

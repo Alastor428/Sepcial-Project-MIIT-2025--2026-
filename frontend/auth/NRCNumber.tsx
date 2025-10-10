@@ -11,27 +11,25 @@ import {
   HStack,
   ScrollView,
   Select,
-  CheckIcon,
+
 } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
 import ContinueButton from "../components/continue_button";
 
 type NRCScreenProps = {
   onBack: () => void;
-  onContinue: (data: {
-    nrc: string;
-    birthday: string;
-    gender: string;
-    job: string;
-  }) => void;
+  signUpData: { name: string; phone: string; pin: string };
+  onContinue: (data: { nrc: string; birthday: string; gender: string; job: string }) => void;
 };
 
-export default function NRCScreen({ onBack, onContinue }: NRCScreenProps) {
+export default function NRCScreen({ onBack, signUpData, onContinue }: NRCScreenProps) {
   const [stateCode, setStateCode] = useState("");
   const [townshipCode, setTownshipCode] = useState("");
   const [citizenType, setCitizenType] = useState("");
   const [nrcNumber, setNrcNumber] = useState("");
-  const [birthday, setBirthday] = useState("");
+  const [day, setDay] = useState<string>("");
+  const [month, setMonth] = useState<string>("");
+  const [year, setYear] = useState<string>("");
   const [gender, setGender] = useState("");
   const [job, setJob] = useState("");
   const [error, setError] = useState("");
@@ -42,7 +40,9 @@ export default function NRCScreen({ onBack, onContinue }: NRCScreenProps) {
       !townshipCode ||
       !citizenType ||
       !nrcNumber ||
-      !birthday ||
+      !day ||
+      !month ||
+      !year ||
       !gender ||
       !job
     ) {
@@ -50,11 +50,7 @@ export default function NRCScreen({ onBack, onContinue }: NRCScreenProps) {
       return;
     }
 
-    if (birthday.length < 8) {
-      setError("Enter a valid Birthday (e.g. 01/01/2000)");
-      return;
-    }
-
+    const birthday = `${day}/${month}/${year}`;
     const fullNrc = `${stateCode}/${townshipCode}(${citizenType})${nrcNumber}`;
 
     setError("");
@@ -92,7 +88,7 @@ export default function NRCScreen({ onBack, onContinue }: NRCScreenProps) {
                 flex={1}
                 selectedValue={stateCode}
                 placeholder="State/Region"
-                _selectedItem={{ bg: "teal.600", endIcon: <CheckIcon size="5" /> }}
+
                 onValueChange={setStateCode}
               >
                 <Select.Item label="1 - Kachin" value="1" />
@@ -116,7 +112,7 @@ export default function NRCScreen({ onBack, onContinue }: NRCScreenProps) {
                 flex={1}
                 selectedValue={townshipCode}
                 placeholder="Township"
-                _selectedItem={{ bg: "teal.600", endIcon: <CheckIcon size="5" /> }}
+
                 onValueChange={setTownshipCode}
               >
                 <Select.Item label="PaKaTa" value="PaKaTa" />
@@ -146,7 +142,7 @@ export default function NRCScreen({ onBack, onContinue }: NRCScreenProps) {
                 flex={1}
                 selectedValue={citizenType}
                 placeholder="Type"
-                _selectedItem={{ bg: "teal.600", endIcon: <CheckIcon size="5" /> }}
+
                 onValueChange={setCitizenType}
               >
                 <Select.Item label="N (Citizen)" value="N" />
@@ -162,7 +158,7 @@ export default function NRCScreen({ onBack, onContinue }: NRCScreenProps) {
               value={nrcNumber}
               onChangeText={setNrcNumber}
               keyboardType="numeric"
-              maxLength={6} // ✅ NRC has 6 digits
+              maxLength={6}
               style={{
                 marginTop: 10,
                 backgroundColor: "white",
@@ -176,57 +172,47 @@ export default function NRCScreen({ onBack, onContinue }: NRCScreenProps) {
 
           {/* Birthday */}
           <FormControl>
-  <Text fontSize={16} color="#7A83F4" mb={2} fontWeight="semibold">
-    Birthday
-  </Text>
-  <HStack space={2}>
-    {/* Day */}
-    <Select
-      flex={1}
-      selectedValue={birthday.split("/")[0]}
-      placeholder="Day"
-      onValueChange={(day) => {
-        const parts = birthday.split("/");
-        setBirthday(`${day}/${parts[1] || ""}/${parts[2] || ""}`);
-      }}
-    >
-      {[...Array(31)].map((_, i) => (
-        <Select.Item key={i} label={`${i + 1}`} value={`${i + 1}`} />
-      ))}
-    </Select>
+            <Text fontSize={16} color="#7A83F4" mb={2} fontWeight="semibold">
+              Birthday
+            </Text>
+            <HStack space={2}>
+              {/* Day */}
+              <Select
+                flex={1}
+                selectedValue={day}
+                placeholder="Day"
+                onValueChange={(val) => setDay(val)}
+              >
+                {[...Array(31)].map((_, i) => (
+                  <Select.Item key={i} label={`${i + 1}`} value={`${i + 1}`} />
+                ))}
+              </Select>
 
-    {/* Month */}
-    <Select
-      flex={1}
-      selectedValue={birthday.split("/")[1]}
-      placeholder="Month"
-      onValueChange={(month) => {
-        const parts = birthday.split("/");
-        setBirthday(`${parts[0] || ""}/${month}/${parts[2] || ""}`);
-      }}
-    >
-      {[...Array(12)].map((_, i) => (
-        <Select.Item key={i} label={`${i + 1}`} value={`${i + 1}`} />
-      ))}
-    </Select>
+              {/* Month */}
+              <Select
+                flex={1}
+                selectedValue={month}
+                placeholder="Month"
+                onValueChange={(val) => setMonth(val)}
+              >
+                {[...Array(12)].map((_, i) => (
+                  <Select.Item key={i} label={`${i + 1}`} value={`${i + 1}`} />
+                ))}
+              </Select>
 
-    {/* Year */}
-    <Select
-      flex={1}
-      selectedValue={birthday.split("/")[2]}
-      placeholder="Year"
-      onValueChange={(year) => {
-        const parts = birthday.split("/");
-        setBirthday(`${parts[0] || ""}/${parts[1] || ""}/${year}`);
-      }}
-    >
-      {Array.from({ length: 50 }, (_, i) => 1980 + i).map((y) => (
-        <Select.Item key={y} label={`${y}`} value={`${y}`} />
-      ))}
-    </Select>
-  </HStack>
-</FormControl>
-
+              {/* Year */}
+              <Select
+                flex={1}
+                selectedValue={year}
+                placeholder="Year"
+                onValueChange={(val) => setYear(val)}
+              >
+                {Array.from({ length: 50 }, (_, i) => 1980 + i).map((y) => (
+                  <Select.Item key={y} label={`${y}`} value={`${y}`} />
+                ))}
+              </Select>
+            </HStack>
+          </FormControl>
 
           {/* Gender */}
           <FormControl>
@@ -236,10 +222,7 @@ export default function NRCScreen({ onBack, onContinue }: NRCScreenProps) {
             <Select
               selectedValue={gender}
               placeholder="Select Gender"
-              _selectedItem={{
-                bg: "teal.600",
-                endIcon: <CheckIcon size="5" />,
-              }}
+              
               onValueChange={setGender}
             >
               <Select.Item label="Male" value="male" />
