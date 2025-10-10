@@ -1,239 +1,243 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Dimensions } from "react-native";
-import { Box, Text, Button, HStack, VStack, ScrollView } from "native-base";
+import {
+  Box,
+  VStack,
+  HStack,
+  Text,
+  ScrollView,
+  Pressable,
+  Center,
+  IconButton,
+} from "native-base";
+import { LineChart } from "react-native-chart-kit";
+import { Ionicons } from "@expo/vector-icons";
 
-const { width } = Dimensions.get("window");
+const screenWidth = Dimensions.get("window").width;
 
-// Normalize values into graph height
-const normalizeData = (data: number[], maxHeight: number) => {
-  const max = Math.max(...data);
-  return data.map((v) => (v / max) * maxHeight);
-};
+const monthNames = [
+  "January","February","March","April","May","June",
+  "July","August","September","October","November","December",
+];
+const years = [2024, 2025];
+const daysInMonth = 30;
 
-// Sample inflow/outflow datasets
-const sampleData = {
-  2024: {
-    Jan: {
-      inflow: [120, 150, 180, 200, 170, 210, 230],
-      outflow: [80, 100, 120, 160, 140, 180, 190],
-    },
-    Feb: {
-      inflow: [200, 180, 150, 170, 160, 190, 210],
-      outflow: [150, 130, 120, 110, 140, 160, 170],
-    },
-    Mar: {
-      inflow: [300, 320, 280, 310, 330, 340, 360],
-      outflow: [220, 240, 200, 230, 250, 260, 270],
-    },
-  },
-  2025: {
-    Jan: {
-      inflow: [220, 250, 280, 300, 270, 310, 330],
-      outflow: [180, 200, 220, 260, 240, 280, 290],
-    },
-    Feb: {
-      inflow: [260, 240, 210, 230, 220, 250, 270],
-      outflow: [200, 180, 170, 160, 190, 210, 220],
-    },
-    Mar: {
-      inflow: [400, 420, 380, 410, 430, 440, 460],
-      outflow: [320, 340, 300, 330, 350, 360, 370],
-    },
-  },
-};
-
-const HistoryScreen = () => {
-  const [view, setView] = useState<"daily" | "monthly" | "yearly">("daily");
-  const [selectedYear, setSelectedYear] =
-    useState<keyof typeof sampleData>(2025);
-  const [selectedMonth, setSelectedMonth] =
-    useState<keyof typeof sampleData[2025]>("Jan");
-
-  const graphHeight = 150;
-
-  // Choose dataset based on view
-  let dataset: { inflow: number[]; outflow: number[]; labels: string[] };
-
-  if (view === "daily") {
-    const data = sampleData[selectedYear][selectedMonth];
-    dataset = {
-      inflow: data.inflow,
-      outflow: data.outflow,
-      labels: Array.from({ length: data.inflow.length }, (_, i) => `${i + 1}`),
-    };
-  } else if (view === "monthly") {
-    const months = Object.keys(sampleData[selectedYear]);
-    dataset = {
-      inflow: months.map((m) =>
-        sampleData[selectedYear][m as keyof typeof sampleData[2025]].inflow.reduce(
-          (a, b) => a + b,
-          0
-        )
-      ),
-      outflow: months.map((m) =>
-        sampleData[selectedYear][m as keyof typeof sampleData[2025]].outflow.reduce(
-          (a, b) => a + b,
-          0
-        )
-      ),
-      labels: months,
-    };
-  } else {
-    // FIX: convert Object.keys (string[]) → number[] before casting
-    const years = Object.keys(sampleData).map((y) => Number(y)) as (keyof typeof sampleData)[];
-    dataset = {
-      inflow: years.map((y) =>
-        Object.values(sampleData[y]).reduce(
-          (acc, m) => acc + m.inflow.reduce((a, b) => a + b, 0),
-          0
-        )
-      ),
-      outflow: years.map((y) =>
-        Object.values(sampleData[y]).reduce(
-          (acc, m) => acc + m.outflow.reduce((a, b) => a + b, 0),
-          0
-        )
-      ),
-      labels: years.map(String), // convert back to string for labels
-    };
+// --- Generate daily sample data ---
+const generateDailyData = () => {
+  const inflow: number[] = [];
+  const outflow: number[] = [];
+  for (let d = 0; d < daysInMonth; d++) {
+    inflow.push(Math.floor(Math.random() * 500 + 50));
+    outflow.push(Math.floor(Math.random() * 500 + 50));
   }
+  return { inflow, outflow };
+};
 
-  const inflowHeights = normalizeData(dataset.inflow, graphHeight);
-  const outflowHeights = normalizeData(dataset.outflow, graphHeight);
+// --- Sample Data ---
+const sampleData: Record<number, Record<string, { inflow: number[], outflow: number[] }>> = {};
+years.forEach((y) => {
+  sampleData[y] = {};
+  monthNames.forEach((m) => {
+    sampleData[y][m] = generateDailyData();
+  });
+});
+
+export default function HistoryScreen() {
+  const [tab, setTab] = useState<"Graph" | "Inflow" | "Outflow">("Graph");
+  const [selectedYearIndex, setSelectedYearIndex] = useState(years.indexOf(new Date().getFullYear()));
+  const [selectedMonthIndex, setSelectedMonthIndex] = useState(new Date().getMonth());
+  const [liveData, setLiveData] = useState(sampleData);
+
+  const selectedYear = years[selectedYearIndex];
+  const selectedMonth = monthNames[selectedMonthIndex];
+
+  const chartConfig = {
+    backgroundGradientFrom: "#fff",
+    backgroundGradientTo: "#fff",
+    decimalPlaces: 0,
+    color: (opacity = 1) => `rgba(122, 131, 244, ${opacity})`,
+    labelColor: (opacity = 1) => `rgba(0,0,0,${opacity})`,
+    propsForDots: { r: "3", strokeWidth: "2", stroke: "#7A83F4" },
+  };
+
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth();
+
+  const inflowDaily = liveData[selectedYear][selectedMonth].inflow;
+  const outflowDaily = liveData[selectedYear][selectedMonth].outflow;
+
+  const labelsDaily = Array.from({ length: daysInMonth }, (_, i) =>
+    i % 2 === 0 ? `${i + 1}` : ""
+  );
+
+  const totalInflow = inflowDaily.reduce((a, b) => a + b, 0);
+  const totalOutflow = outflowDaily.reduce((a, b) => a + b, 0);
+
+  // --- Real-time update ---
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setLiveData(prev => {
+        const newData = JSON.parse(JSON.stringify(prev));
+        newData[selectedYear][selectedMonth].inflow = newData[selectedYear][selectedMonth].inflow.map(v => Math.max(v + Math.floor(Math.random() * 50 - 25), 0));
+        newData[selectedYear][selectedMonth].outflow = newData[selectedYear][selectedMonth].outflow.map(v => Math.max(v + Math.floor(Math.random() * 50 - 25), 0));
+        return newData;
+      });
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [selectedYear, selectedMonth]);
+
+  // --- Month Navigation ---
+  const handleMonthChange = (direction: "prev" | "next") => {
+    let newMonth = selectedMonthIndex;
+    let newYear = selectedYearIndex;
+    if (direction === "prev") {
+      if (newMonth === 0 && newYear > 0) { newMonth = 11; newYear -= 1; }
+      else if (newMonth > 0) newMonth -= 1;
+    } else {
+      if (newMonth === currentMonth && years[newYear] === currentYear) return;
+      if (newMonth === 11 && newYear < years.length - 1) { newMonth = 0; newYear += 1; }
+      else if (newMonth < 11) newMonth += 1;
+    }
+    if (years[newYear] === currentYear && newMonth > currentMonth) return;
+    setSelectedMonthIndex(newMonth);
+    setSelectedYearIndex(newYear);
+  };
+
+  // --- Random Transactions with Hour ---
+  const generateRandomData = (type: "Inflow" | "Outflow") => {
+    const items = [];
+    const numItems = Math.floor(Math.random() * 6) + 3;
+    for (let i = 0; i < numItems; i++) {
+      const user = `User${Math.floor(Math.random() * 9 + 1)}`;
+      const amount = (Math.random() * 1000 + 100).toFixed(2);
+      const day = Math.floor(Math.random() * 28) + 1;
+      const hour = Math.floor(Math.random() * 24);
+      const minute = Math.floor(Math.random() * 60);
+      const time = `${hour.toString().padStart(2,"0")}:${minute.toString().padStart(2,"0")}`;
+      items.push({ user, amount: `${type === "Inflow" ? "+" : "-"}${amount} Ks`, date: `${day}/${selectedMonthIndex + 1}`, time });
+    }
+    return items;
+  };
+
+  const [inflowData, setInflowData] = useState(generateRandomData("Inflow"));
+  const [outflowData, setOutflowData] = useState(generateRandomData("Outflow"));
+
+  useEffect(() => {
+    setInflowData(generateRandomData("Inflow"));
+    setOutflowData(generateRandomData("Outflow"));
+  }, [selectedMonthIndex, selectedYearIndex]);
+
+  const dataToShow = tab === "Inflow" ? inflowData : outflowData;
+
+  const totalAmount =
+    tab === "Inflow"
+      ? `+${inflowData.reduce((sum, item) => sum + parseFloat(item.amount.replace("+","").replace(" Ks","")),0).toFixed(2)} Ks`
+      : `-${outflowData.reduce((sum, item) => sum + parseFloat(item.amount.replace("-","").replace(" Ks","")),0).toFixed(2)} Ks`;
 
   return (
-    <ScrollView flex={1} bg="white" p={4}>
-      <VStack space={4}>
-        {/* View Toggle */}
-        <HStack space={3} justifyContent="center">
-          <Button
-            onPress={() => setView("daily")}
-            variant={view === "daily" ? "solid" : "outline"}
-          >
-            Daily
-          </Button>
-          <Button
-            onPress={() => setView("monthly")}
-            variant={view === "monthly" ? "solid" : "outline"}
-          >
-            Monthly
-          </Button>
-          <Button
-            onPress={() => setView("yearly")}
-            variant={view === "yearly" ? "solid" : "outline"}
-          >
-            Yearly
-          </Button>
+    <Box flex={1} bg="white"  >
+      <Box  bg={"#B9BDF0"} pt={4} pb={2} height={304} borderBottomRadius={20} >
+        <HStack mt={59} alignItems="center" >
+        <Text flex={1} textAlign="center" 
+        fontSize="32" fontWeight="bold" 
+        color="#fff" mt={4} mb={2} fontFamily={"inter"}>
+          History
+          </Text>
+      </HStack>
+      {/* Tabs */}
+      <Center mt={60 }>
+        <HStack justifyContent="center" space={6}>
+          {["Graph","Inflow","Outflow"].map((label) => (
+            <Pressable key={label} onPress={() => setTab(label as any)}>
+              <Text
+                px={4} py={2}
+                borderRadius="md"
+                bg={tab === label ? "#fff" : "transparent"}
+                color={tab === label ? "#7a83f4" : "#fff"}
+                fontWeight="bold"
+              >{label}</Text>
+            </Pressable>
+          ))}
+        </HStack>
+      </Center>
+      </Box>
+
+      <ScrollView mt={6} px={4}>
+        {/* Year Selector Bar (Graph Tab only) */}
+        {tab === "Graph" && (
+          <HStack justifyContent="center" mb={3} space={3}>
+            {years.map((y, idx) => (
+              <Pressable key={y} onPress={() => setSelectedYearIndex(idx)}>
+                <Text
+                  px={4} py={2}
+                  borderRadius="md"
+                  bg={selectedYearIndex === idx ? "#7A83F4" : "transparent"}
+                  color={selectedYearIndex === idx ? "white" : "#7A83F4"}
+                  fontWeight="bold"
+                >{y}</Text>
+              </Pressable>
+            ))}
+          </HStack>
+        )}
+
+        {/* Month Navigation */}
+        <HStack justifyContent="center" alignItems="center" mb={4}>
+          <IconButton icon={<Ionicons name="chevron-back" size={20} color="#7A83F4" />} onPress={()=>handleMonthChange("prev")}/>
+          <Text mx={3} fontSize="lg" fontWeight="bold" color="#7A83F4">{selectedMonth} {selectedYear}</Text>
+          <IconButton icon={<Ionicons name="chevron-forward" size={20} color="#7A83F4" />} onPress={()=>handleMonthChange("next")}/>
         </HStack>
 
-        {/* Controls for Daily/Monthly */}
-        {view === "daily" && (
-          <HStack justifyContent="center" space={2}>
-            {Object.keys(sampleData[selectedYear]).map((m) => (
-              <Button
-                key={m}
-                size="sm"
-                onPress={() =>
-                  setSelectedMonth(m as keyof typeof sampleData[2025])
-                }
-                variant={selectedMonth === m ? "solid" : "outline"}
-              >
-                {m}
-              </Button>
-            ))}
-          </HStack>
-        )}
-        {view === "monthly" && (
-          <HStack justifyContent="center" space={2}>
-            {Object.keys(sampleData)
-              .map((y) => Number(y))
-              .map((y) => (
-                <Button
-                  key={y}
-                  size="sm"
-                  onPress={() =>
-                    setSelectedYear(y as keyof typeof sampleData)
-                  }
-                  variant={selectedYear === y ? "solid" : "outline"}
-                >
-                  {y}
-                </Button>
-              ))}
-          </HStack>
-        )}
-
-        {/* Inflow Graph */}
-        <Box>
-          <Text bold fontSize="lg" mb={2}>
-            Inflow Data ({view})
-          </Text>
-          <HStack
-            alignItems="flex-end"
-            space={2}
-            justifyContent="center"
-            h={graphHeight + 20}
-          >
-            {inflowHeights.map((h, i) => (
-              <Box
-                key={i}
-                w={width / dataset.labels.length / 2}
-                h={h}
-                bg="green.400"
-                rounded="md"
-              />
-            ))}
-          </HStack>
-          <HStack justifyContent="center" space={2}>
-            {dataset.labels.map((label, i) => (
-              <Text
-                key={i}
-                fontSize="xs"
-                w={width / dataset.labels.length / 2}
-                textAlign="center"
-              >
-                {label}
-              </Text>
-            ))}
+        {/* Wallet Card */}
+        <Box bg="#7A83F4" borderRadius="xl" p={4} mb={4} shadow={2}>
+          <HStack alignItems="center" space={3}>
+            <Ionicons name="wallet" size={24} color="white"/>
+            <VStack>
+              <Text color="white" bold fontSize="md">NexoWallet</Text>
+              <Text color="white">{tab}</Text>
+            </VStack>
+            <Box flex={1}/>
+            {tab === "Graph" ? (
+              <VStack alignItems="flex-end">
+                <Text color="#fff" bold fontSize="md">+{totalInflow} Ks</Text>
+                <Text color="#fff" bold fontSize="md">-{totalOutflow} Ks</Text>
+              </VStack>
+            ) : (
+              <Text color="white" bold fontSize="md">{totalAmount}</Text>
+            )}
           </HStack>
         </Box>
 
-        {/* Outflow Graph */}
-        <Box>
-          <Text bold fontSize="lg" mb={2}>
-            Outflow Data ({view})
-          </Text>
-          <HStack
-            alignItems="flex-end"
-            space={2}
-            justifyContent="center"
-            h={graphHeight + 20}
-          >
-            {outflowHeights.map((h, i) => (
-              <Box
-                key={i}
-                w={width / dataset.labels.length / 2}
-                h={h}
-                bg="red.400"
-                rounded="md"
-              />
-            ))}
-          </HStack>
-          <HStack justifyContent="center" space={2}>
-            {dataset.labels.map((label, i) => (
-              <Text
-                key={i}
-                fontSize="xs"
-                w={width / dataset.labels.length / 2}
-                textAlign="center"
-              >
-                {label}
-              </Text>
-            ))}
-          </HStack>
-        </Box>
-      </VStack>
-    </ScrollView>
+        {/* Graph */}
+        {tab==="Graph" && <>
+          <Text bold fontSize="lg" mb={2} color="#7a83f4">Inflow</Text>
+          <LineChart
+            data={{ labels: labelsDaily, datasets:[{ data: inflowDaily, color:(o=1)=>`rgba(0,200,102,${o})`, strokeWidth:3 }] }}
+            width={screenWidth-40} height={220} yAxisLabel="Ks "
+            chartConfig={{...chartConfig, color:(o=1)=>`rgba(0,200,102,${o})`}}
+            bezier style={{ borderRadius:12, marginBottom:20 }}
+          />
+          <Text bold fontSize="lg" mb={2} color="#7a83f4">Outflow</Text>
+          <LineChart
+            data={{ labels: labelsDaily, datasets:[{ data: outflowDaily, color:(o=1)=>`rgba(255,99,132,${o})`, strokeWidth:3 }] }}
+            width={screenWidth-40} height={220} yAxisLabel="Ks "
+            chartConfig={{...chartConfig, color:(o=1)=>`rgba(255,99,132,${o})`}}
+            bezier style={{ borderRadius:12 }}
+          />
+        </>}
+
+        {/* Transaction List */}
+        {tab!=="Graph" && <VStack space={3}>
+          {dataToShow.map((item, idx)=>(
+            <Box key={idx} borderWidth={1} borderColor="#7A83F4" borderRadius="lg" p={3} mb={3}>
+              <HStack justifyContent="space-between" mb={1}>
+                <Text bold color="#666">{tab==="Inflow"?`Transfer from ${item.user}`:`Transfer to ${item.user}`}</Text>
+                <Text bold color={tab==="Inflow"? "#7a84f3":"#7a83f4"}>{item.amount}</Text>
+              </HStack>
+              <Text color="#888">{item.date} {item.time}</Text>
+            </Box>
+          ))}
+        </VStack>}
+      </ScrollView>
+    </Box>
   );
-};
-
-export default HistoryScreen;
+}
