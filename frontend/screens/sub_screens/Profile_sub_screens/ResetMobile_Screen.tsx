@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import { TextInput } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import {
   Box,
@@ -8,57 +9,63 @@ import {
   Pressable,
   Icon,
   Center,
-  Button,
-  Input
 } from "native-base";
+import NextButton from "../../../components/next_button";
 
 const ResetMobileNumberScreen = ({ navigation }) => {
+  const [phone, setPhone] = useState("");
+
   return (
-    <Box flex={1} bg="white" safeArea>
-      {/* Header with back button and title */}
-      <Box bg="#ffff" p={4} flexDirection="row" alignItems="center" justifyContent="space-between">
+    <Box flex={1} bg="white">
+      {/* Header */}
+      <Box
+        bg="white"
+        p={4}
+        flexDirection="row"
+        mb={20}
+        justifyContent="space-between"
+      >
         <Pressable onPress={() => navigation.goBack()}>
-          <Icon as={Ionicons} name="arrow-undo" size={8} color="#7A83F4" bg="#ffff" />
+          <Icon as={Ionicons} name="arrow-undo" size={8} color="#7A83F4" mt={"50px"} />
         </Pressable>
+        <HStack justifyContent={"center"}>
+          <Text fontSize="24" fontWeight="bold" color="#7A83F4" mt={"50px"} mr={20}>
+            Reset Mobile Number
+          </Text>
+        </HStack>
       </Box>
-      
-      {/* Main content */}
-      <Center flex={1} px={30} pt={-100} pb={300}>
-        {/* Input field for username */}
-         <Text fontSize="24" fontWeight="700" color="#7A83F4" fontFamily="inter" fontStyle="bold" left={-20}>
-          Reset Mobile Number
-        </Text>
-        <Box w="100%" mb={20}>
-          <Input
-            fontSize="18"
-            fontWeight="400"
-            color="#7A83F4"
-            fontFamily="inter"
-            bg="#ffff"
-            borderRadius="20"
-            p={3}
-            borderWidth={1}
-            borderColor="#7A83F4"
-            _focus={{ borderColor: "#7A83F4", bg: "#F5F5F5" }}
-          />
-        </Box>
-        
-        {/* Next Button */}
-        <Button 
-          bg="#7A83F4" 
-          borderRadius="10" 
-          py={1}
+
+      {/* Input Field */}
+      <Center>
+        <HStack
+          justifyContent="center"
+          width="326px"
+          height="56px"
+          bg="white"
           borderWidth={1}
           borderColor="#7A83F4"
-          _pressed={{ bg: "#5A63D4" }}
-          w="100%"
-          mt={5}
+          borderRadius={10}
+          alignItems="center"
+          px={3}
         >
-          <Text fontSize="24" fontWeight="700" color="white" fontFamily="inter" fontStyle="bold">
-            Next
-          </Text>
-        </Button>
+          <TextInput
+            placeholder="Enter your new mobile number"
+            value={phone}
+            onChangeText={setPhone}
+            keyboardType="numeric"
+            style={{
+              flex: 1,
+              fontSize: 16,
+              height: "100%",
+            }}
+          />
+        </HStack>
       </Center>
+
+      {/* Next Button */}
+      <HStack justifyContent={"center"} py={10}>
+        <NextButton onPress={() => navigation.navigate("PinEntryScreen")} />
+      </HStack>
     </Box>
   );
 };

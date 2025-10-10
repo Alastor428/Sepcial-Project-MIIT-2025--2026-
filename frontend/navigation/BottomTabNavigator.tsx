@@ -5,6 +5,7 @@ import { Box, Pressable, Icon, Text } from "native-base";
 import HomeScreen_StackNavigator from "./HomeScreen_StackNavigator";
 import ProfileScreen_StackNavigator from "./Profile_StackNavigator";
 import HistoryScreen from "../screens/main_screens/HistoryScreen";
+import BankAccountScreen from "../screens/main_screens/Bank_Account";
 
 type BottomTabParamList = {
   Home: undefined;
@@ -123,7 +124,7 @@ export default function BottomTabNavigator({ loggedInUser }: BottomTabProps) {
       </Tab.Screen>
 
       <Tab.Screen name="Scan" component={PlaceholderScreen} />
-      <Tab.Screen name="Bank" component={PlaceholderScreen} />
+      <Tab.Screen name="Bank" component={BankAccountScreen} />
       <Tab.Screen name="Profile">
         {(props) => <ProfileScreen_StackNavigator {...props} loggedInUser={loggedInUser} />}
       </Tab.Screen>

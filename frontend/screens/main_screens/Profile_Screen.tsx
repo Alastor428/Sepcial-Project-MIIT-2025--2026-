@@ -104,10 +104,10 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ loggedInUser, navigation 
   const user = userData || loggedInUser;
 
   return (
-    <Box flex={1} bg="white" safeArea>
+    <Box flex={1} bg="white" >
       {/* Profile Header */}
-      <Box bg="#fff" p={6} borderBottomLeftRadius={30} borderBottomRightRadius={30}>
-        <Center>
+      <Box bg="#B9BDF0" p={6} borderBottomLeftRadius={30} borderBottomRightRadius={30} height={304}>
+        <Center mt={10}>
           <Box position="relative">
             <Avatar
               size="120"
@@ -129,10 +129,10 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ loggedInUser, navigation 
             </Pressable>
           </Box>
 
-          <Text mt={4} fontSize="20" fontWeight="700" color="#7A83F4">
+          <Text mt={4} fontSize="20" fontWeight="700" color="#fff">
             {user?.name || "No Name"}
           </Text>
-          <Text fontSize="20" color="#B9BDF0" fontWeight="700">
+          <Text fontSize="20" color="#fff" fontWeight="700">
             {user?.phone || "No Phone"}
           </Text>
         </Center>

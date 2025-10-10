@@ -136,7 +136,7 @@ export default function HistoryScreen() {
 
   return (
     <Box flex={1} bg="white"  >
-      <Box  bg={"#B9BDF0"} pt={4} pb={2} height={304} borderBottomRadius={20} >
+      <Box  bg={"#B9BDF0"} pt={4} pb={2} height={304} borderBottomRadius={30} >
         <HStack mt={59} alignItems="center" >
         <Text flex={1} textAlign="center" 
         fontSize="32" fontWeight="bold" 

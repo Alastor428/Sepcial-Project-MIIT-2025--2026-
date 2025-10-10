@@ -1,66 +1,87 @@
-import React from "react";
+import React, { useRef, useState } from "react";
+import { Box, HStack, Text, Pressable, Icon, Center } from "native-base";
+import { TextInput } from "react-native";
+import NextButton from "../../../components/next_button";
 import { Ionicons } from "@expo/vector-icons";
-import {
-  Box,
-  VStack,
-  HStack,
-  Text,
-  Pressable,
-  Icon,
-  Center,
-  Button,
-  Input
-} from "native-base";
 
-const ResetPasswordScreen = ({ navigation }) => {
+const ResetPasswordScreen = ({ navigation }: any) => {
+  const PIN_LENGTH = 6;
+  const [pin, setPin] = useState<string[]>(Array(PIN_LENGTH).fill(""));
+  const inputs = useRef<(TextInput | null)[]>([]);
+
+  const handleChange = (text: string, index: number) => {
+    const newPin = [...pin];
+    newPin[index] = text;
+    setPin(newPin);
+
+    if (text && index < PIN_LENGTH - 1) {
+      inputs.current[index + 1]?.focus();
+    }
+  };
+
+  const handleKeyPress = (e: any, index: number) => {
+    if (e.nativeEvent.key === "Backspace" && !pin[index] && index > 0) {
+      const newPin = [...pin];
+      newPin[index - 1] = "";
+      setPin(newPin);
+      inputs.current[index - 1]?.focus();
+    }
+  };
+
+  const handleContinue = () => {
+    const enteredPin = pin.join("");
+    // Navigate or use the PIN as needed
+    navigation.navigate("PinEntryScreen", { pin: enteredPin });
+  };
+
   return (
-    <Box flex={1} bg="white" safeArea>
-      {/* Header with back button and title */}
-      <Box bg="#ffff" p={4} flexDirection="row" alignItems="center" justifyContent="space-between">
+    <Box flex={1} bg="white">
+      {/* Header */}
+      <Box bg="white" p={4} flexDirection="row" mb={20} justifyContent="space-between">
         <Pressable onPress={() => navigation.goBack()}>
-          <Icon as={Ionicons} name="arrow-undo" size={8} color="#7A83F4" bg="#ffff" />
+          <Icon as={Ionicons} name="arrow-undo" size={8} color="#7A83F4" mt="50px" />
         </Pressable>
-         <Text fontSize="24" fontWeight="700" color="#7A83F4" fontFamily="inter" fontStyle="bold" left={-50}>
-          Reset Username
-        </Text>
-      </Box>
-      
-      {/* Main content */}
-      <Center flex={1} px={30} pt={-100} pb={300}>
-        {/* Input field for username */}
-         <Text fontSize="24" fontWeight="700" color="#7A83F4" fontFamily="inter" fontStyle="bold" left={-50}>
-          Reset Password
-        </Text>
-        <Box w="100%" mb={20}>
-          <Input
-            fontSize="18"
-            fontWeight="400"
-            color="#7A83F4"
-            fontFamily="inter"
-            bg="#ffff"
-            borderRadius="20"
-            p={3}
-            borderWidth={1}
-            borderColor="#7A83F4"
-            _focus={{ borderColor: "#7A83F4", bg: "#F5F5F5" }}
-          />
-        </Box>
-        
-        {/* Next Button */}
-        <Button 
-          bg="#7A83F4" 
-          borderRadius="10" 
-          py={1}
-          borderWidth={1}
-          borderColor="#7A83F4"
-          _pressed={{ bg: "#5A63D4" }}
-          w="100%"
-          mt={5}
-        >
-          <Text fontSize="24" fontWeight="700" color="white" fontFamily="inter" fontStyle="bold">
-            Next
+        <HStack justifyContent="center">
+          <Text fontSize="24" fontWeight="bold" color="#7A83F4" mt="50px" mr={20}>
+            Reset Password
           </Text>
-        </Button>
+        </HStack>
+      </Box>
+
+      {/* PIN Inputs */}
+      <Center>
+        <HStack space={2} mb={6}>
+          {pin.map((value, index) => (
+            <TextInput
+              key={index}
+              ref={(ref) => {
+                inputs.current[index] = ref;
+              }}
+              value={value}
+              onChangeText={(text) =>
+                handleChange(text.replace(/[^0-9]/g, "").slice(0, 1), index)
+              }
+              onKeyPress={(e) => handleKeyPress(e, index)}
+              keyboardType="numeric"
+              secureTextEntry
+              maxLength={1}
+              style={{
+                textAlign: "center",
+                fontSize: 18,
+                borderColor: "#7A83F4",
+                borderWidth: 1,
+                borderRadius: 6,
+                width: 38,
+                height: 38,
+              }}
+            />
+          ))}
+        </HStack>
+
+        {/* Next Button */}
+        <Box w="100%" alignItems="center" mt={4}>
+          <NextButton onPress={handleContinue} />
+        </Box>
       </Center>
     </Box>
   );

@@ -69,6 +69,7 @@ export default function HomeScreen({
         pb={10}
         px={6}
         alignItems="flex-start"
+        height={304}
       >
         <HStack height={46} alignItems="center" mb={2}>
           <Icon

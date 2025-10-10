@@ -29,19 +29,19 @@ const ResetUsernameScreen = ({ navigation }) => {
         bg="white"
         p={4}
         flexDirection="row"
-        alignItems="center"
+        mb={20}
         justifyContent="space-between"
       >
         <Pressable onPress={() => navigation.goBack()}>
           <Icon as={Ionicons} name="arrow-undo" size={8} color="#7A83F4"  mt={"50px"}/>
         </Pressable>
-      </Box>
-
-        <HStack justifyContent={"center"} py={10}>
-          <Text fontSize="24" fontWeight="700" color="#7A83F4" mb={6}>
+        <HStack justifyContent={"center"}>
+          <Text fontSize="24" fontWeight="bold" color="#7A83F4" mt={"50px"} mr={20}>
           Reset Username
         </Text>
         </HStack>
+      </Box>
+
 
         <Center>
           <HStack justifyContent={"center"} width={"326px"} height={"56px"} backgroundColor= {"white"}

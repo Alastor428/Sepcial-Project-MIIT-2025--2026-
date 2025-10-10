@@ -74,7 +74,7 @@ const SettingsScreen = ({ navigation }: SettingsScreenProps) => {
           
           {/* Reset Mobile Number Button */}
           <Pressable 
-            onPress={() => navigation.navigate("ResetMobile")}
+            onPress={() => navigation.navigate("ResetMobileNumber")}
             bg="white"
             borderRadius="20"
             p={7}
