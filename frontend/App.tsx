@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { NativeBaseProvider } from "native-base";
 import { theme } from "./theme";
-import axios from "axios";
+import { userAPI } from "./services/api";
 
 // Screens
 import PhoneNumberScreen from "./auth/PhoneNumberScreen";
@@ -67,11 +67,13 @@ export default function App() {
               const fullData = {
                 ...signUpData,
                 nrc: nrcData.nrc,
-                dob: nrcData.birthday.split('/').reverse().join('-'), // convert to YYYY-MM-DD
-                gender: nrcData.gender.charAt(0).toUpperCase() + nrcData.gender.slice(1), // Male, Female
+                dob: nrcData.birthday.split("/").reverse().join("-"), // convert to YYYY-MM-DD
+                gender:
+                  nrcData.gender.charAt(0).toUpperCase() +
+                  nrcData.gender.slice(1), // Male, Female
                 employment: nrcData.job,
               };
-              await axios.post("http://192.168.99.96:5000/api/user/register", fullData);
+              await userAPI.register(fullData);
               setCurrentScreen("phone");
               setSignUpData(null);
             } catch (error) {

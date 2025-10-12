@@ -50,7 +50,7 @@ const MIITPaymentScreen: React.FC = () => {
     if (!loggedInUser?.userId) return;
 
     axios
-      .get(`http://192.168.99.96:5000/api/users/${loggedInUser.userId}`)
+      .get(`http://192.168.68.100:3000/api/users/${loggedInUser.userId}`)
       .then((res) => {
         setUser(res.data);
         setStudentName(res.data.name); // auto-fill from backend
@@ -87,7 +87,7 @@ const MIITPaymentScreen: React.FC = () => {
 
     navigation.navigate("QuickPayPinScreen", {
       transactionData: {
-        sender: user, 
+        sender: user,
         recipient: {
           userId: "quickpay-provider",
           name: "MIIT University",

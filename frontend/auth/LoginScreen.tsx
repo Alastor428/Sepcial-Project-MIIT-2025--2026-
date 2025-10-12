@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Box, Input, Button, Text, Center } from "native-base";
 import { TextInput } from "react-native";
-import axios from "axios";
+import { userAPI } from "../services/api";
 
 type LoginScreenProps = {
   setLoggedInUser: (user: any) => void;
@@ -19,11 +19,8 @@ export default function LoginScreen({ setLoggedInUser }: LoginScreenProps) {
     }
 
     try {
-      const response = await axios.post(
-        "http://192.168.99.96:5000/api/user/login",
-        { phone, pin }
-      );
-      setLoggedInUser(response.data);
+      const userData = await userAPI.login(phone, pin);
+      setLoggedInUser(userData);
       setError("");
     } catch (err) {
       console.error("Login error:", err);

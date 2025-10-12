@@ -15,7 +15,7 @@ import {
   Center,
   Spinner,
 } from "native-base";
-import axios from "axios";
+import { userAPI } from "../../services/api";
 
 type HomeScreenProps = {
   navigation: any;
@@ -35,10 +35,8 @@ export default function HomeScreen({
     const fetchUser = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(
-          `http://192.168.99.96:5000/api/user/${loggedInUser.userId}/dashboard`
-        );
-        setUser(res.data);
+        const userData = await userAPI.getDashboard(loggedInUser.userId);
+        setUser(userData);
       } catch (err) {
         console.error("Error fetching user in HomeScreen:", err);
       } finally {
@@ -152,7 +150,7 @@ export default function HomeScreen({
               />
             }
             label="Cash Out"
-            onPress={() => navigation.navigate("CashOut",{ loggedInUser})}
+            onPress={() => navigation.navigate("CashOut", { loggedInUser })}
           />
           <FunctionButton
             icon={
@@ -164,7 +162,7 @@ export default function HomeScreen({
               />
             }
             label="Cash In"
-            onPress={() => navigation.navigate("CashIn", { loggedInUser})}
+            onPress={() => navigation.navigate("CashIn", { loggedInUser })}
           />
         </HStack>
         <HStack space={70} justifyContent="center">
@@ -183,7 +181,7 @@ export default function HomeScreen({
               />
             }
             label="Top-up"
-            onPress={() => navigation.navigate("TopUpScreen",{ loggedInUser })}
+            onPress={() => navigation.navigate("TopUpScreen", { loggedInUser })}
           />
         </HStack>
       </VStack>

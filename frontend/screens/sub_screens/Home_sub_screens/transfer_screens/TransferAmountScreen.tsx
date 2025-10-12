@@ -13,9 +13,38 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import TransferButton from "../../../../components/transfer_button";
 import TransferConfirmModal from "../../../../components/transfer_comfirm_modal";
+import { TextInput } from "react-native";
 
-export default function TransferAmountScreen({ navigation, route }: any) {
-  const { recipient, loggedInUser } = route.params;
+interface User {
+  _id?: string;
+  name: string;
+  userId: string;
+  balance: number;
+  phone: string;
+  pin: string;
+  gender?: string;
+  employment?: string;
+  dob?: string;
+  nrc?: string;
+  avatar?: string;
+  createdAt?: Date;
+}
+
+interface TransferParams {
+  sender: User;
+  recipient: User;
+  amount: string;
+  loggedInUser: User;
+}
+
+export default function TransferAmountScreen({
+  navigation,
+  route,
+}: {
+  navigation: any;
+  route: { params: TransferParams };
+}) {
+  const { recipient, loggedInUser, sender } = route.params;
   const [amount, setAmount] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
 
@@ -35,7 +64,7 @@ export default function TransferAmountScreen({ navigation, route }: any) {
       return;
     }
 
-    if (numericAmount > recipient.balance) {
+    if (numericAmount > sender.balance) {
       alert("Insufficient balance. Please enter a lower amount.");
       setAmount("");
       return;
@@ -95,10 +124,17 @@ export default function TransferAmountScreen({ navigation, route }: any) {
           <Text color="#7A83F4" fontSize="lg">
             Amount (Ks)
           </Text>
-          <Input
-            variant="unstyled"
+          <TextInput
+            // style={{
+            //   flex: 1,
+            //   borderWidth: 0,
+            //   fontSize: 18,
+            //   paddingVertical: 8,
+            //   paddingHorizontal: 4,
+            //   borderBottomColor: "#7A83F4",
+            //   borderBottomWidth: 2,
+            // }}
             placeholder="Enter Amount"
-            fontSize="lg"
             value={amount}
             onChangeText={(text) => setAmount(text.replace(/[^0-9.]/g, ""))}
             keyboardType="numeric"
@@ -117,7 +153,7 @@ export default function TransferAmountScreen({ navigation, route }: any) {
               <Icon as={Ionicons} name="eye-outline" size={4} color="#7A83F4" />
             </HStack>
             <Text color="#7A83F4" fontSize="xs">
-              {recipient.balance.toFixed(2)} Ks
+              {sender.balance.toFixed(2)} Ks
             </Text>
           </HStack>
         </VStack>

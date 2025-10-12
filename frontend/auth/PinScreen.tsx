@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Box, Text, Center, VStack, Button } from "native-base";
 import PinInputSection from "../components/pin_input_section";
-import axios from "axios";
+import { userAPI } from "../services/api";
 
 type PinScreenProps = {
   phone: string;
@@ -27,12 +27,8 @@ export default function PinScreen({
     setError("");
 
     try {
-      const response = await axios.post(
-        "http://192.168.99.96:5000/api/user/login",
-        { phone, pin }
-      );
-
-      onLoginSuccess(response.data);
+      const userData = await userAPI.login(phone, pin);
+      onLoginSuccess(userData);
     } catch (err) {
       console.error("Login error:", err);
       setError("Invalid PIN. Please try again.");
@@ -42,7 +38,7 @@ export default function PinScreen({
   };
 
   return (
-    <Center flex={1} px={6} bg="white"> 
+    <Center flex={1} px={6} bg="white">
       <VStack space={6} alignItems="center" w="100%" mt={-40}>
         <Text fontSize="24" fontWeight="bold" color="#7A83F4" mb={85}>
           Enter Your PIN
@@ -59,7 +55,11 @@ export default function PinScreen({
         <Button
           variant="ghost"
           onPress={onBack}
-          _text={{ color: "#7A83F4" ,fontWeight: "bold" , fontSize: 16, textDecorationLine: 'underline'
+          _text={{
+            color: "#7A83F4",
+            fontWeight: "bold",
+            fontSize: 16,
+            textDecorationLine: "underline",
           }}
           isLoading={isLoading}
         >

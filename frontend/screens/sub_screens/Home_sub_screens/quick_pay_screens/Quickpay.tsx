@@ -23,7 +23,13 @@ export default function QuickPayScreen() {
       <Box bg="#B9BDF0" pt={20} pb={20} px={6} borderBottomRadius="20">
         <HStack alignItems="center">
           <Pressable onPress={() => navigation.goBack()}>
-            <Icon as={Ionicons} name="arrow-undo" size={7} color="#fff" mr={8} />
+            <Icon
+              as={Ionicons}
+              name="arrow-undo"
+              size={7}
+              color="#fff"
+              mr={8}
+            />
           </Pressable>
           <Center flex={1}>
             <Text color="#fff" fontSize="32" fontWeight="600">
@@ -47,13 +53,19 @@ export default function QuickPayScreen() {
           px={3}
           py={2}
           InputLeftElement={
-            <Icon as={Ionicons} name="search" size={5} ml={3} color="gray.400" />
+            <Icon
+              as={Ionicons}
+              name="search"
+              size={5}
+              ml={3}
+              color="gray.400"
+            />
           }
         />
       </VStack>
 
       {/* Categories */}
-      <ScrollView px={8} mt={4} pt={4}>
+      <ScrollView px={8} mt={4} pt={4} marginLeft={-4}>
         <Text fontSize="20" fontWeight="bold" mb={3}>
           Categories
         </Text>
@@ -66,7 +78,11 @@ export default function QuickPayScreen() {
           p={14}
           mb={41}
         >
-          <HStack alignItems="center" justifyContent="space-between" shadow={"4"}>
+          <HStack
+            alignItems="center"
+            justifyContent="space-between"
+            shadow={"4"}
+          >
             <HStack alignItems="center" space={3}>
               <Box
                 bg="#7A83F4"
@@ -75,7 +91,6 @@ export default function QuickPayScreen() {
                 alignItems="center"
                 justifyContent="center"
                 shadow={"4"}
-              
               >
                 <Icon
                   as={MaterialCommunityIcons}

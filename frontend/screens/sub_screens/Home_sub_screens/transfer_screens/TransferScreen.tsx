@@ -11,17 +11,13 @@ import {
 } from "native-base";
 import { Ionicons, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
 import SmallNextButton from "../../../../components/small_next_button";
-import axios from "axios";
+import { userAPI } from "../../../../services/api";
 import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import type { RootStackParamList } from "../../../../navigation/HomeScreen_StackNavigator";
 import ContactPicker from "../../../../components/contacts";
 import { TextInput } from "react-native";
-type User = {
-  name: string;
-  balance: number;
-  userId: string;
-};
+import { User } from "../../../../../types/user";
 
 type TransferScreenNavigationProp = StackNavigationProp<RootStackParamList>;
 type TransferScreenRouteProp = RouteProp<RootStackParamList, "Transfer">;
@@ -34,23 +30,24 @@ const TransferScreen: React.FC = () => {
 
   const navigation = useNavigation<TransferScreenNavigationProp>();
   const route = useRoute<TransferScreenRouteProp>();
-  const { loggedInUser } = route.params; 
+  const { loggedInUser } = route.params;
 
   useEffect(() => {
     if (!loggedInUser?.userId) return;
 
-    axios
-      .get(
-        `http://192.168.99.96:5000/api/user/${loggedInUser.userId}/dashboard`
-      )
-      .then((res) => {
-        setUser(res.data);
-        setLoading(false);
-      })
-      .catch((err) => {
+    const fetchUser = async () => {
+      try {
+        setLoading(true);
+        const userData = await userAPI.getDashboard(loggedInUser.userId);
+        setUser(userData);
+      } catch (err) {
         console.error("Backend error:", err);
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    fetchUser();
   }, [loggedInUser]);
 
   if (loading) {
@@ -126,7 +123,8 @@ const TransferScreen: React.FC = () => {
             alignItems="center"
             mb={5}
             mt={2}
-          ><TextInput
+          >
+            <TextInput
               style={{
                 flex: 1,
                 fontSize: 18,
@@ -140,9 +138,8 @@ const TransferScreen: React.FC = () => {
               onChangeText={(text) =>
                 setPhoneNumber(text.replace(/[^0-9]/g, ""))
               }
-              
             />
-          
+
             {/* ✅ Contact picker fills TextInput */}
             <ContactPicker onSelect={(num) => setAmount(num)} />
           </HStack>
@@ -151,13 +148,11 @@ const TransferScreen: React.FC = () => {
             onPress={async () => {
               if (phoneNumber) {
                 try {
-                  const res = await axios.get(
-                    `http://192.168.99.96:5000/api/user/check/${phoneNumber}`
-                  );
+                  const checkResult = await userAPI.checkByPhone(phoneNumber);
 
-                  if (res.data.valid) {
+                  if (checkResult.valid) {
                     navigation.navigate("TransferAmountScreen", {
-                      recipient: res.data.user,
+                      recipient: checkResult.user,
                       sender: user,
                       loggedInUser: user,
                     });
