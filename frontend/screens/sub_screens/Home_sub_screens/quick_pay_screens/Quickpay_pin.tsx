@@ -18,19 +18,27 @@ type QuickPayPinScreenRouteProp = RouteProp<
   "QuickPayPinScreen"
 >;
 
-// Sender type
+// Fixed Sender type
 interface Sender {
-  studentId: string;
-  studentName: string;
-  contactNumber?: string;
-  pin: string;
+  userId: string;
+  name: string;
   balance: number;
+  pin: string;
 }
 
-// Recipient type
+// Fixed Recipient type
 interface Recipient {
   userId: string;
   name: string;
+  balance: number;
+  pin: string;
+}
+
+// Transaction type
+interface TransactionData {
+  sender: Sender;
+  recipient: Recipient;
+  amount: string | number;
 }
 
 const QuickPayPinScreen: React.FC = () => {
@@ -38,18 +46,13 @@ const QuickPayPinScreen: React.FC = () => {
   const route = useRoute<QuickPayPinScreenRouteProp>();
 
   // Destructure the passed transactionData
-  const { transactionData } = route.params;
+  const { transactionData } = route.params as { transactionData: TransactionData };
   const { sender, recipient, amount } = transactionData;
 
   const handlePinContinue = (enteredPin: string) => {
     // Check PIN directly from sender
     if (enteredPin.trim() !== sender.pin.trim()) {
-      alert("Incorrect PIN");
-      return;
-    }
-
-    // Build transaction data for next screen
-    const transactionToSend = {
+      const transactionToSend = {
       sender,
       recipient,
       amount: Number(amount), // ensure number type
@@ -60,6 +63,10 @@ const QuickPayPinScreen: React.FC = () => {
     navigation.navigate("TransactionDetailsScreen", {
       transactionData: transactionToSend,
     });
+    }
+
+
+    // Build transaction data for next screen
   };
 
   return (

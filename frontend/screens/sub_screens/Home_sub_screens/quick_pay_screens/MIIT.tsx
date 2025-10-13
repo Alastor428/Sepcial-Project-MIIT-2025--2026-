@@ -10,7 +10,7 @@ import {
   Icon,
   Divider,
   ScrollView,
-  Image, // ✅ Use NativeBase Image for consistency
+  Image,
 } from "native-base";
 import { TextInput } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -19,7 +19,6 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import type { RootStackParamList } from "../../../../navigation/HomeScreen_StackNavigator";
 
-// ✅ Correct local image path
 const miitLogo = require("../../../../assets/miit-logo.png");
 
 type MIITPaymentScreenNavigationProp = StackNavigationProp<
@@ -60,38 +59,38 @@ export default function MIITPaymentScreen() {
       return;
     }
 
-    // Validate amount
     const numericAmount = Number(amount);
     if (isNaN(numericAmount) || numericAmount <= 0) {
       alert("Please enter a valid amount");
       return;
     }
 
-    // Check if user has sufficient balance
     if (numericAmount > loggedInUser.balance) {
       alert("Insufficient balance. Please enter a lower amount.");
       return;
     }
 
+    setAmount("");
+
+    // Navigate to QuickPayPinScreen with correct transactionData
     navigation.navigate("QuickPayPinScreen", {
-      transactionData: {
-        sender: loggedInUser, // ✅ Sender = logged-in user
-        recipient: {
-          userId: "institution-" + (selectedInstitution?.id || "1"),
-          name: selectedInstitution?.name || "Education Payment",
-          balance: 0,
-          pin: "",
-        },
-        amount: numericAmount,
-        details: {
-          studentName,
-          studentId,
-          contactNumber,
-          semester,
-          institutionName: selectedInstitution?.name || "Education Institution",
-        },
-      },
-    });
+  transactionData: {
+    sender: {
+      name: studentName,         // renamed
+      userId: studentId,         // renamed
+      balance: loggedInUser.balance,
+      pin: loggedInUser.pin || "",
+    },
+    recipient: {
+      userId: selectedInstitution?.id.toString() || "0",
+      name: selectedInstitution?.name || "Unknown Institution",
+      balance: 0,                // dummy for type
+      pin: "",                    // dummy for type
+    },
+    amount: numericAmount,
+  },
+});
+
   };
 
   return (
@@ -132,7 +131,7 @@ export default function MIITPaymentScreen() {
 
       {/* Form */}
       <ScrollView px={4} mt={4}>
-        <Box bg="#fff" p={5}>
+        <Box bg="#fff" p={5} mb={90}>
           <VStack space={5}>
             <FormField
               label="Student Name"
@@ -163,12 +162,12 @@ export default function MIITPaymentScreen() {
               placeholder="Enter Semester"
             />
 
-            <Divider my={2} />
-
             <FormField
               label="Amount"
               value={amount}
-              onChangeText={(text) => setAmount(text.replace(/[^0-9]/g, ""))}
+              onChangeText={(text) =>
+                setAmount(text.replace(/[^0-9]/g, ""))
+              }
               placeholder="Enter Amount"
               keyboardType="numeric"
             />
@@ -181,7 +180,7 @@ export default function MIITPaymentScreen() {
   );
 }
 
-// ✅ Reusable Input Field Component
+// Reusable input field component
 type FormFieldProps = {
   label: string;
   value: string;

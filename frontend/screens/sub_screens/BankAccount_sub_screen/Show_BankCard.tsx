@@ -1,169 +1,122 @@
 import React, { useState } from "react";
-import { useNavigation } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
-import {
-  Box,
-  VStack,
-  HStack,
-  Text,
-  Pressable,
-  Icon,
-} from "native-base";
-import { space } from "native-base/lib/typescript/theme/styled-system";
+import { Box, VStack, HStack, Text, Pressable, Icon } from "native-base";
+
+// Dummy bank data
+const dummyBankData: any = {
+  KBZ: { accountName: "Kiran Linn", balance: 150000 },
+  AYA: { accountName: "Kiran Linn", balance: 50000 },
+  CB: { accountName: "Kiran Linn", balance: 20000 },
+};
+
+type RouteParams = {
+  selectedBank: string;
+  bankAccount: string;
+  loggedInUser: {
+    name: string;
+    userId: string;
+    pin: string;
+  };
+};
 
 export default function BankAccountLinkScreen() {
-  const navigation = useNavigation();
-  const [accountNumber, setAccountNumber] = useState("");
-  
-  function handleKeyPress(key: string) {
-    if (key === "clear") {
-      setAccountNumber("");
-    } else if (key === "back") {
-      setAccountNumber((prev) => prev.slice(0, -1));
-    } else if (accountNumber.length < 20) {
-      setAccountNumber((prev) => prev + key);
-    }
-  }
-  
-  const handleContinue = () => {
-    if (accountNumber.length > 0) {
-      console.log("Account Number:", accountNumber);
-    } else {
-      alert("Please enter your bank account number");
-    }
-  };
+  const navigation = useNavigation<any>();
+  const route = useRoute<RouteProp<Record<string, RouteParams>, string>>();
+  const { selectedBank, bankAccount, loggedInUser } = route.params || {};
+
+  const [accountNumber] = useState(bankAccount);
+
+  const bankInfo = selectedBank ? dummyBankData[selectedBank] : null;
 
   return (
     <Box flex={1} bg="#fff" px={4} pt={12} pb={10}>
-      {/* Header */}
       <HStack alignItems="center" mb={8}>
         <Pressable onPress={() => navigation.goBack()}>
-          <Icon as={Ionicons} name="arrow-back" size={6} color="#7A83F4" mr={4} />
+          <Icon as={Ionicons} name="arrow-undo" size={7} color="#7A83F4" mr={4} />
         </Pressable>
-        <Text fontSize={24} fontWeight="700" color="#7A83F4" fontFamily="Inter">
+        <Text fontSize={24} fontWeight="700" color="#7A83F4" marginLeft={20}>
           Bank Account
         </Text>
       </HStack>
-      
-      {/* Card Info */}
+
       <Box
         bg="#7A83F4"
-        borderRadius={10}
+        borderRadius={20}
         p={6}
         mb={8}
         alignSelf="center"
         width="90%"
+        height="180"
         shadow={2}
       >
-        <HStack
-          justifyContent="space-between"
-          space={3}
-          alignItems="center"
-          mb={2}
-        >
-          <VStack>
-            <Text
-              color="#fff"
-              fontSize={16}
-              fontWeight="700"
-              fontFamily="Inter"
-            >
-              NexoWallet
-            </Text>
-            {/* Modified section with spacing between labels */}
-            <HStack space={6} pt={5}>
-              <VStack>
-                <Text
-                  color="#fff"
-                  fontSize={12}
-                  fontWeight="700"
-                  fontFamily="Inter"
-                >
-                  Card Holder Name
-                </Text>
-              </VStack>
-              <VStack>
-                <Text
-                  color="#fff"
-                  fontSize={12}
-                  fontWeight="700"
-                  fontFamily="Inter"
-                >
-                  Account Name
-                </Text>
-              </VStack>
-            </HStack>
-          </VStack>
-        </HStack>
-        
-        <HStack justifyContent="space-between" alignItems="center" space={1} pt={2}>
-          <VStack>
-            <Text
-              color="#fff"
-              fontSize={12}
-              fontWeight="700"
-              fontFamily="Inter"
-            >
-              Bank Account Number
-            </Text>
-          </VStack>
-          <Text
-            color="#fff"
-            fontSize={12}
-            fontWeight="700"
-            fontFamily="Inter"
-          >
-            *************1234
+        <VStack space={3}>
+          <Text color="#fff" fontSize={16} fontWeight="700">
+            {selectedBank || "Bank Not Selected"}
           </Text>
-        </HStack>
+          <HStack>
+            <Text color="#fff" fontSize={12}>
+            Bank Account Number:
+          </Text>
+          <Text color="#fff" fontSize={16} fontWeight="700">
+            {accountNumber || "Not Provided"}
+          </Text>
+          </HStack>
+          {bankInfo && (
+            <>
+              <Text color="#fff" fontSize={14}>
+                Account Name: {bankInfo.accountName}
+              </Text>
+              <Text color="#fff" fontSize={14}>
+                Balance: {bankInfo.balance} Ks
+              </Text>
+            </>
+          )}
+        </VStack>
       </Box>
-      
-      {/* Transfer Options */}
-      <VStack space={4} mb={4}>
+
+      <VStack space={4} mb={4} width={"90%"} ml={4}>
         <Pressable
           borderWidth={1}
           borderColor="#7A83F4"
-          bg="#ffff"
-          px={4}
-          py={1}
-          borderRadius={25}
-          onPress={() => alert("Transfer from Bank Account")}
+          bg="#fff"
+          px={8}
+          py={3}
+          borderRadius={5}
+          onPress={() =>
+            navigation.navigate("BankAccountPin", {
+              selectedBank,
+              bankAccount,
+              loggedInUser,
+              amount: bankInfo?.balance || 0,
+            })
+          }
         >
-          <Text fontSize="12" color="#7A83F4" fontWeight="700" fontStyle="bold" fontFamily="inter">
-            Transfer from Bank Account
-          </Text>
-           <Icon
-             as={Ionicons}
-             name="chevron-forward"
-             size={5}
-             color="#7A83F4"
-             left={300}
-            />
+          <HStack alignItems="center" justifyContent="space-between">
+            <Text fontSize="14" color="#7A83F4" fontWeight="700">
+              Transfer from Bank Account
+            </Text>
+            <Icon as={Ionicons} name="chevron-forward" size={5} color="#7A83F4" />
+          </HStack>
         </Pressable>
+
         <Pressable
-          bg="#ffff"
-          px={4}
-          py={1}
-          borderRadius={25}
           borderWidth={1}
           borderColor="#7A83F4"
+          bg="#fff"
+          px={8}
+          py={3}
+          borderRadius={5}
           onPress={() => alert("Transfer to Bank Account")}
         >
-          <Text fontSize="12" color="#7A83F4" fontWeight="700" fontFamily="inter" fontStyle="bold">
-            Transfer to Bank Account
-          </Text>
-          <Icon
-             as={Ionicons}
-             name="chevron-forward"
-             size={5}
-             color="#7A83F4"
-             left={300}
-             p={-5}
-            />
+          <HStack alignItems="center" justifyContent="space-between">
+            <Text fontSize="14" color="#7A83F4" fontWeight="700">
+              Transfer to Bank Account
+            </Text>
+            <Icon as={Ionicons} name="chevron-forward" size={5} color="#7A83F4" />
+          </HStack>
         </Pressable>
       </VStack>
-      
-      {/* Rest of your component content */}
     </Box>
   );
 }

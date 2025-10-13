@@ -1,47 +1,19 @@
-// TransferPinScreen.tsx
 import React from "react";
-import { Box, Text, HStack, Center, Icon, Pressable } from "native-base";
+import { Box, Text, HStack, Center, Pressable, Icon } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import type { RootStackParamList } from "../../../../navigation/HomeScreen_StackNavigator";
 import PinInputSection from "../../../../components/pin_input_section";
 
-// Navigation & Route types
-type TransferPinNavigationProp = StackNavigationProp<
-  RootStackParamList,
-  "TransferPinScreen"
->;
-type TransferPinRouteProp = RouteProp<RootStackParamList, "TransferPinScreen">;
+type PinScreenNavigationProp = StackNavigationProp<RootStackParamList, "PinScreen">;
+type PinScreenRouteProp = RouteProp<RootStackParamList, "PinScreen">;
 
-export default function TransferPinScreen() {
-  const navigation = useNavigation<TransferPinNavigationProp>();
-  const route = useRoute<TransferPinRouteProp>();
+const PinScreen: React.FC = () => {
+  const navigation = useNavigation<PinScreenNavigationProp>();
+  const route = useRoute<PinScreenRouteProp>();
 
-  const { sender, recipient, amount } = route.params ?? {};
-
-  // If params are missing, prevent crash
-  if (!sender || !recipient || !amount) {
-    return (
-      <Center flex={1} px={6}>
-        <Text fontSize="18" color="red.500" textAlign="center">
-          Error: Missing transfer data.
-        </Text>
-        <Pressable
-          mt={4}
-          px={4}
-          py={2}
-          bg="#7A83F4"
-          borderRadius={8}
-          onPress={() => navigation.goBack()}
-        >
-          <Text color="white" textAlign="center" fontWeight="bold">
-            Go Back
-          </Text>
-        </Pressable>
-      </Center>
-    );
-  }
+  const { sender, recipient, amount, bankAccount } = route.params;
 
   const handlePinContinue = (enteredPin: string) => {
     if (enteredPin !== sender.pin) {
@@ -49,14 +21,13 @@ export default function TransferPinScreen() {
       return;
     }
 
-    const amountNum = Number(amount);
-    sender.balance -= amountNum;
-    recipient.balance += amountNum;
-
     const transactionData = {
       sender,
-      recipient,
-      amount: amountNum,
+      recipient: {
+        userId: recipient.userId || "",
+        name: recipient.name || bankAccount || "Unknown Recipient",
+      },
+      amount: Number(amount),
       date: new Date().toLocaleDateString(),
       time: new Date().toLocaleTimeString(),
     };
@@ -73,7 +44,7 @@ export default function TransferPinScreen() {
         </Pressable>
         <Center flex={1}>
           <Text fontSize="24" fontWeight="bold" color="#7A83F4">
-            Transfer
+            Transfer PIN
           </Text>
         </Center>
         <Box w={6} />
@@ -90,4 +61,6 @@ export default function TransferPinScreen() {
       <PinInputSection onContinue={handlePinContinue} />
     </Box>
   );
-}
+};
+
+export default PinScreen;

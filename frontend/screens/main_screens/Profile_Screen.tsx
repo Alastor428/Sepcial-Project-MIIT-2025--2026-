@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import {
   Box,
@@ -11,48 +11,67 @@ import {
   Avatar,
   Divider,
   Spinner,
+  Button,
+  AlertDialog,
 } from "native-base";
-import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as ImagePicker from "expo-image-picker"; 
+import * as ImagePicker from "expo-image-picker";
+import * as Updates from "expo-updates";
+import { userAPI } from "../../services/api";
 
 interface ProfileScreenProps {
   loggedInUser: any;
+  setLoggedInUser?: (user: any) => void;
   navigation: any;
 }
 
-const ProfileScreen: React.FC<ProfileScreenProps> = ({ loggedInUser, navigation }) => {
-  const [userData, setUserData] = useState<any>(null);
+const ProfileScreen: React.FC<ProfileScreenProps> = ({
+  loggedInUser,
+  setLoggedInUser,
+  navigation,
+}) => {
+  const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
+  const cancelRef = useRef(null);
+
+  // Fetch user data
   useEffect(() => {
-    axios
-      .get(`http://192.168.99.96:5000/api/user/${loggedInUser.id}/profile`)
-      .then((res) => {
-        setUserData(res.data);
-        setProfileImage(res.data.avatar || null);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching profile:", err);
-        setLoading(false);
-      });
-  }, [loggedInUser.id]);
+    if (!loggedInUser?.userId) return;
 
+    const fetchProfile = async () => {
+      try {
+        setLoading(true);
+        const data = await userAPI.getDashboard(loggedInUser.userId);
+        setUser(data);
+      } catch (err) {
+        console.error("Error fetching user profile:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, [loggedInUser]);
+
+  // Logout function
   const handleLogout = async () => {
     try {
-      await AsyncStorage.removeItem("authToken");
-      navigation.reset({
-        index: 0,
-        routes: [{ name: "LoginScreen" }],
-      });
-    } catch (error) {
-      console.error("Error during logout:", error);
+      await AsyncStorage.clear();
+      setUser(null);
+      setProfileImage(null);
+      if (setLoggedInUser) setLoggedInUser(null);
+
+      // Reload the app
+      await Updates.reloadAsync();
+    } catch (err) {
+      console.error("Error during logout:", err);
     }
   };
 
-  // Pick image from phone
+  // Pick image
   const pickImage = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permissionResult.granted) {
@@ -70,25 +89,6 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ loggedInUser, navigation 
     if (!result.canceled) {
       const selectedImage = result.assets[0].uri;
       setProfileImage(selectedImage);
-
-      const formData = new FormData();
-      formData.append("avatar", {
-        uri: selectedImage,
-        name: "profile.jpg",
-        type: "image/jpeg",
-      } as any);
-
-      try {
-        await axios.post(
-          `http://192.168.99.96:5000/api/user/${loggedInUser.id}/upload-avatar`,
-          formData,
-          {
-            headers: { "Content-Type": "multipart/form-data" },
-          }
-        );
-      } catch (error) {
-        console.error("Error uploading image:", error);
-      }
     }
   };
 
@@ -101,12 +101,24 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ loggedInUser, navigation 
     );
   }
 
-  const user = userData || loggedInUser;
+  if (!user) {
+    return (
+      <Center flex={1}>
+        <Text>No profile data found.</Text>
+      </Center>
+    );
+  }
 
   return (
-    <Box flex={1} bg="white" >
-      {/* Profile Header */}
-      <Box bg="#B9BDF0" p={6} borderBottomLeftRadius={30} borderBottomRightRadius={30} height={304}>
+    <Box flex={1} bg="white">
+      {/* Header */}
+      <Box
+        bg="#B9BDF0"
+        p={6}
+        borderBottomLeftRadius={30}
+        borderBottomRightRadius={30}
+        height={304}
+      >
         <Center mt={10}>
           <Box position="relative">
             <Avatar
@@ -141,68 +153,11 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ loggedInUser, navigation 
       {/* Info Section */}
       <Box mx={8} mt={6} shadow={4} bg="white" borderRadius={8}>
         <VStack space={0}>
-          <Pressable>
-            <HStack alignItems="center" space={3} height={45} px={4}>
-              <Text fontSize="20" fontWeight="700" color="#7A83F4">
-                ID Number
-              </Text>
-              <Text fontSize="20" color="#B9BDF0" fontWeight="700" ml={10}>
-                {user?.userId || "N/A"}
-              </Text>
-            </HStack>
-          </Pressable>
-
-          <Divider bg="#B9BDF0" opacity={0.2} />
-
-          <Pressable>
-            <HStack alignItems="center" space={3} height={45} px={4}>
-              <Text fontSize="20" fontWeight="700" color="#7A83F4">
-                Gender
-              </Text>
-              <Text fontSize="20" color="#B9BDF0" fontWeight="700" ml={20}>
-                {user?.gender || "N/A"}
-              </Text>
-            </HStack>
-          </Pressable>
-
-          <Divider bg="#B9BDF0" opacity={0.2} />
-
-          <Pressable>
-            <HStack alignItems="center" space={3} height={45} px={4}>
-              <Text fontSize="20" fontWeight="700" color="#7A83F4">
-                Employment
-              </Text>
-              <Text fontSize="20" color="#B9BDF0" fontWeight="700" ml={10}>
-                {user?.employment || "N/A"}
-              </Text>
-            </HStack>
-          </Pressable>
-
-          <Divider bg="#B9BDF0" opacity={0.2} />
-
-          <Pressable>
-            <HStack alignItems="center" space={3} height={45} px={4}>
-              <Text fontSize="20" fontWeight="700" color="#7A83F4">
-                Date of Birth
-              </Text>
-              <Text fontSize="20" color="#7A83F4" fontWeight="700" opacity={0.5} ml={3} mr={"8px"}>
-                {user?.dob || "N/A"}
-              </Text>
-              <Icon as={Ionicons} name="chevron-forward" size={5} color="#7A83F4" />
-            </HStack>
-          </Pressable>
-          <Divider bg="#B9BDF0" opacity={0.2} />
-
-          <Pressable>
-            <HStack alignItems="center" space={3} height={45} px={4}>
-              <Text fontSize="20" fontWeight="700" color="#7A83F4">
-                NRC
-              </Text>
-              <Text fontSize="20" color="#B9BDF0" fontWeight="700" ml={10}>
-                {user?.NRC || user?.nrc || "N/A"}
-              </Text>
-            </HStack>
-          </Pressable>
+          <ProfileRow label="ID Number" value={user?.userId} />
+          <ProfileRow label="Gender" value={user?.gender} />
+          <ProfileRow label="Employment" value={user?.employment} />
+          <ProfileRow label="Date of Birth" value={user?.dob} />
+          <ProfileRow label="NRC" value={user?.NRC || user?.nrc} />
 
           <Divider bg="#B9BDF0" opacity={0.2} />
 
@@ -217,7 +172,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ loggedInUser, navigation 
 
           <Divider bg="#B9BDF0" opacity={0.2} />
 
-          <Pressable onPress={handleLogout}>
+          <Pressable onPress={() => setShowLogoutConfirm(true)}>
             <HStack height={45} px={4}>
               <Text fontSize="20" fontWeight="700" color="#7A83F4" mr={"206px"}>
                 Log Out
@@ -227,8 +182,56 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ loggedInUser, navigation 
           </Pressable>
         </VStack>
       </Box>
+
+      {/* Logout Confirmation */}
+      <AlertDialog
+        leastDestructiveRef={cancelRef}
+        isOpen={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+      >
+        <AlertDialog.Content>
+          <AlertDialog.Header>Confirm Logout</AlertDialog.Header>
+          <AlertDialog.Body>
+            Are you sure you want to log out? 
+          </AlertDialog.Body>
+          <AlertDialog.Footer>
+            <Button
+              ref={cancelRef}
+              onPress={() => setShowLogoutConfirm(false)}
+              backgroundColor="#7A83F4"
+            >
+              Cancel
+            </Button>
+            <Button
+              onPress={handleLogout}
+              ml={3}
+              backgroundColor="#7A83F4"
+            >
+              Log Out
+            </Button>
+          </AlertDialog.Footer>
+        </AlertDialog.Content>
+      </AlertDialog>
     </Box>
   );
 };
+
+function ProfileRow({ label, value }: { label: string; value?: string }) {
+  return (
+    <>
+      <Pressable>
+        <HStack alignItems="center" space={3} height={45} px={4}>
+          <Text fontSize="20" fontWeight="700" color="#7A83F4">
+            {label}
+          </Text>
+          <Text fontSize="20" color="#B9BDF0" fontWeight="700" ml={10}>
+            {value || "N/A"}
+          </Text>
+        </HStack>
+      </Pressable>
+      <Divider bg="#B9BDF0" opacity={0.2} />
+    </>
+  );
+}
 
 export default ProfileScreen;

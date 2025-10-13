@@ -7,7 +7,6 @@ import TransferScreen from "../screens/sub_screens/Home_sub_screens/transfer_scr
 import TransferAmountScreen from "../screens/sub_screens/Home_sub_screens/transfer_screens/TransferAmountScreen";
 import TransferConfirmModal from "../components/transfer_comfirm_modal";
 import CashInScreen from "../screens/sub_screens/Home_sub_screens/cash_in_screens/Cash-In";
-import PinEntryScreen from "../screens/sub_screens/Home_sub_screens/cash_in_screens/Cash-In-pin-screen";
 import TransferPinScreen from "../screens/sub_screens/Home_sub_screens/transfer_screens/TransferPinScreen";
 import TransactionDetailsScreen from "../screens/sub_screens/Home_sub_screens/transfer_screens/Transfer_5";
 import TopUpScreen from "../screens/sub_screens/Home_sub_screens/top_up_screens/Top-up-(1)";
@@ -17,6 +16,8 @@ import EducationScreen from "../screens/sub_screens/Home_sub_screens/quick_pay_s
 import MIITPaymentScreen from "../screens/sub_screens/Home_sub_screens/quick_pay_screens/MIIT";
 import QuickPayPinScreen from "../screens/sub_screens/Home_sub_screens/quick_pay_screens/Quickpay_pin";
 import CashOutScreen from "../screens/sub_screens/Home_sub_screens/cash_out_screens/cash-out-screen";
+import PinScreen from "../screens/sub_screens/Home_sub_screens/cash_out_screens/CashInOutPin_Screen";
+
 function PlaceholderScreen() {
   return null;
 }
@@ -74,7 +75,7 @@ export type RootStackParamList = {
     loggedInUser: { name: string; userId: string; balance: number };
     currentAmount?: string;
   };
-  PinEntryScreen: { sender: any; recipient: any; amount: number };
+  
   QuickPay: {
     loggedInUser: { name: string; userId: string; balance: number };
     currentAmount?: string;
@@ -86,13 +87,22 @@ export type RootStackParamList = {
       balance: number;
       pin: string;
     };
+    selectedInstitution: {
+      id: number;
+      name: string;
+      type: string;
+      location: string;
+      logo: string;
+    };
+    currentAmount?: string;
   };
   MIITPayment: {
-    loggedInUser: {
+   loggedInUser:any;
+   recipient: any;
+    sender: {
       name: string;
-      userId: string;
       balance: number;
-      pin: string;
+      userId: string;
     };
     selectedInstitution: {
       id: number;
@@ -117,13 +127,7 @@ export type RootStackParamList = {
         pin: string;
       };
       amount: string | number;
-      details?: {
-        studentName: string;
-        studentId: string;
-        contactNumber: string;
-        semester: string;
-        institutionName: string;
-      };
+  
     };
   };
   TopUpScreen: { loggedInUser: any }; // or your user type
@@ -133,6 +137,13 @@ export type RootStackParamList = {
     amount: number;
     phoneNumber: string;
   };
+  PinScreen: {
+  sender: any;
+  recipient: { userId: string; name?: string };
+  amount: number;
+  bankAccount: string;
+};
+
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -170,7 +181,7 @@ export default function HomeScreen_StackNavigator({
       />
       <Stack.Screen name="CashOut" component={CashOutScreen} />
       <Stack.Screen name="CashIn" component={CashInScreen} />
-      <Stack.Screen name="PinEntryScreen" component={PinEntryScreen} />
+      <Stack.Screen name="PinScreen" component={PinScreen} />
       <Stack.Screen name="QuickPay" component={QuickPayScreen} />
       <Stack.Screen name="EducationScreen" component={EducationScreen} />
       <Stack.Screen name="MIITPayment" component={MIITPaymentScreen} />

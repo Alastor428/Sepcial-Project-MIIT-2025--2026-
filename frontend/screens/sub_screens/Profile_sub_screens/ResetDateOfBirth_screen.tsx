@@ -30,7 +30,7 @@ const ResetDateOfBirthScreen = ({ navigation }: any) => {
       alert("Please select your complete date of birth.");
       return;
     }
-    navigation.navigate("ConfirmDateOfBirth", { day, month, year });
+    navigation.navigate("ResetPin");
   };
 
   return (

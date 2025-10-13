@@ -32,21 +32,21 @@ export default function EducationScreen() {
 
   useEffect(() => {
     axios
-      .get("http://192.168.99.96:5000/api/institutions")
+      .get("http://192.168.99.96:3000/api/institutions")
       .then((res) => {
-        setInstitutions(
-          res.data.length
-            ? res.data
-            : [
-                {
-                  id: 1,
-                  name: "MIIT",
-                  type: "University",
-                  location: "Mandalay",
-                  logo: "https://miit-logo.png",
-                },
-              ]
-        );
+        if (res.data && res.data.length) {
+          setInstitutions(res.data);
+        } else {
+          setInstitutions([
+            {
+              id: 1,
+              name: "MIIT",
+              type: "University",
+              location: "Mandalay",
+              logo: "https://miit-logo.png",
+            },
+          ]);
+        }
       })
       .catch(() => {
         setInstitutions([
@@ -103,6 +103,15 @@ export default function EducationScreen() {
                 navigation.navigate("MIITPayment", {
                   loggedInUser,
                   selectedInstitution: institution,
+                  sender: {
+                    name: loggedInUser?.name || "User",
+                    balance: loggedInUser?.balance || 0,
+                    userId: loggedInUser?.userId || "0",
+                  },
+                  recipient: {
+                    userId: institution.id.toString(),
+                    name: institution.name,
+                  },
                 })
               }
               borderRadius="md"
@@ -114,21 +123,25 @@ export default function EducationScreen() {
               <HStack alignItems="center" space={4}>
                 <Avatar
                   size="md"
-                  source={{ uri: institution.logo }}
+                  source={{
+                    uri:
+                      institution.logo ||
+                      "https://miit-logo.png", // fallback logo
+                  }}
                   bg="#7A83F4"
                 >
-                  {institution.name.charAt(0)}
+                  {institution.name?.charAt(0) || "I"}
                 </Avatar>
 
                 <VStack flex={1}>
-                  <Text fontSize="12" fontWeight="bold" color="#7A83F4">
+                  <Text fontSize="14" fontWeight="bold" color="#7A83F4">
                     {institution.name}
                   </Text>
                   <HStack mt={1}>
-                    <Text fontSize="xs" color="#7A83F4" mr={2} opacity={0.5}>
+                    <Text fontSize="12" color="#7A83F4" mr={2} opacity={0.5}>
                       {institution.type}
                     </Text>
-                    <Text fontSize="xs" color="#7A83F4" opacity={0.5}>
+                    <Text fontSize="12" color="#7A83F4" opacity={0.5}>
                       • {institution.location}
                     </Text>
                   </HStack>

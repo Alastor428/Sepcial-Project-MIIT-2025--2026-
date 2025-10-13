@@ -1,6 +1,5 @@
 // CashInScreen.tsx
 import React, { useState } from "react";
-import { Ionicons } from "@expo/vector-icons";
 import { TextInput } from "react-native";
 import {
   Box,
@@ -11,20 +10,16 @@ import {
   Icon,
   Center,
 } from "native-base";
+import { Ionicons } from "@expo/vector-icons";
 import ContinueButton from "../../../../components/continue_button";
-import { RouteProp, useRoute, useNavigation } from "@react-navigation/native";
-import type { RootStackParamList } from "../../../../navigation/HomeScreen_StackNavigator";
-import type { StackNavigationProp } from "@react-navigation/stack";
+import axios from "axios";
 
-type CashInScreenRouteProp = RouteProp<RootStackParamList, "CashIn">;
-type CashInScreenNavigationProp = StackNavigationProp<RootStackParamList, "CashIn">;
+export default function CashInScreen({ navigation, route }: any) {
+  const [amount, setAmount] = useState("");
 
-export default function CashInScreen() {
-  const route = useRoute<CashInScreenRouteProp>();
-  const navigation = useNavigation<CashInScreenNavigationProp>();
-
-  const { loggedInUser, currentAmount } = route.params ?? {};
-  const [amount, setAmount] = useState(currentAmount?.toString() || "");
+  // Get data from route params
+  const { loggedInUser, selectedBank = "KBZ", bankAccount = "00123456789" } =
+    route.params || {};
 
   if (!loggedInUser) {
     return (
@@ -39,63 +34,53 @@ export default function CashInScreen() {
     );
   }
 
-  const handleContinue = () => {
-    const amountNum = Number(amount);
-    if (!amount || isNaN(amountNum) || amountNum <= 0) {
-      alert("Enter a valid amount");
+  const onTransferPress = () => {
+    const numericAmount = parseFloat(amount);
+
+    if (!amount || isNaN(numericAmount) || numericAmount <= 0) {
+      alert("Please enter a valid amount.");
       return;
     }
 
-    const recipient = {
-      name: "Bank",
-      userId: "BANK-001",
-      balance: 0,
-      pin: "000000",
-    };
-
-    navigation.navigate("PinEntryScreen", {
+    navigation.navigate("PinScreen", {
       sender: loggedInUser,
-      recipient,
-      amount: amountNum, // ✅ now a number
+      recipient: {
+        name: selectedBank,
+        accountNumber: bankAccount,
+      },
+      amount: numericAmount,
+      bankaccount: bankAccount,
     });
+    setAmount("");
   };
 
   return (
-    <Box flex={1} bg="white">
+    <Box flex={1} bg="#fff">
       {/* Header */}
-      <Box
-        bg="#B9BDF0"
-        borderBottomLeftRadius={20}
-        borderBottomRightRadius={20}
-        pt={12}
-        pb={8}
-        px={6}
-        height={180}
-      >
-        <HStack alignItems="center" px={4} pt={2} pb={4} ml={-4}>
+      <Box bg="#B9BDF0" height={180} borderBottomRadius={20}>
+        <HStack alignItems="center" px={4} py={"15%"}>
           <Pressable onPress={() => navigation.goBack()}>
-            <Icon as={Ionicons} name="arrow-undo" size={7} color="#fff" />
+            <Icon as={Ionicons} name="arrow-undo" size="7" color="#fff" />
           </Pressable>
-          <Center flex={1}>
-            <Text fontSize="32" fontWeight="bold" color="#fff">
-              Cash In
-            </Text>
-          </Center>
-          <Box w={6} />
-        </HStack>
-        <Center>
           <Text
-            fontSize="20"
+            fontSize="32"
+            fontWeight="bold"
+            fontStyle={"inter"}
             color="#fff"
-            fontWeight={"bold"}
-            fontFamily={"inter"}
+            mx={"auto"}
           >
+            Cash In
+          </Text>
+        </HStack>
+
+        <Center>
+          <Text fontSize="20" fontWeight="bold" color="#fff" mt={-10}>
             Transfer From Bank Account
           </Text>
         </Center>
       </Box>
 
-      {/* Card */}
+      {/* Bank Card */}
       <HStack justifyContent="center">
         <Box
           width={328}
@@ -106,6 +91,7 @@ export default function CashInScreen() {
           mt={31}
           mb={10}
         >
+          {/* Bank Info */}
           <HStack
             px={4}
             pt={4}
@@ -119,31 +105,24 @@ export default function CashInScreen() {
               <HStack mb={2}>
                 <Icon
                   as={Ionicons}
-                  name="person-circle-outline"
+                  name="bank-outline"
                   size={7}
                   color="#fff"
                 />
-                <Text color="#fff" fontSize={20} fontFamily={"inter"}>
-                  {loggedInUser?.name}
+                <Text color="#fff" fontSize={20}>
+                  {selectedBank}
                 </Text>
               </HStack>
-
-              <Text
-                color="#fff"
-                fontSize={14}
-                fontFamily={"inter"}
-                opacity={0.5}
-              >
-                ID- {loggedInUser?.userId}
+              <Text color="#fff" fontSize={14} opacity={0.5}>
+                Account - {bankAccount}
               </Text>
             </VStack>
           </HStack>
 
-          {/* Transfer Amount */}
+          {/* Amount Input */}
           <HStack justifyContent={"center"} alignItems={"center"}>
             <Text
               fontSize={16}
-              fontFamily={"inter"}
               color={"#7A83F4"}
               mt={14}
               fontWeight={"medium"}
@@ -184,25 +163,23 @@ export default function CashInScreen() {
             </Text>
           </HStack>
 
-          {/* Balance */}
+          {/* Total Balance */}
           <HStack justifyContent={"center"} alignItems={"center"}>
             <Text
-              fontWeight={"Medium"}
               fontSize={14}
               color={"#7A83F4"}
               mt={23}
-              fontStyle={"inter"}
               opacity={0.5}
             >
-              Total Balance (Ks): {loggedInUser?.balance} Ks
+              Total Balance (Ks): {loggedInUser?.balance ?? 0} Ks
             </Text>
           </HStack>
         </Box>
       </HStack>
 
       {/* Continue Button */}
-      <HStack justifyContent="center" mt={-1}>
-        <ContinueButton onPress={handleContinue} />
+      <HStack justifyContent="center">
+        <ContinueButton onPress={onTransferPress} />
       </HStack>
     </Box>
   );

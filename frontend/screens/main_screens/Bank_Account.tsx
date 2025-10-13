@@ -1,54 +1,50 @@
-import React from "react";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useNavigation } from "@react-navigation/native";
+import React, { useState } from "react";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
-import {
-  Box,
-  VStack,
-  Text,
-  Pressable,
-  Icon,
-  Center,
-  HStack,
-} from "native-base";
-
-// Define the stack param list for your BankAccount stack
-type BankAccountStackParamList = {
-  BankAccount: undefined;
-  LinkBankAccount: undefined;
-};
+import { Box, VStack, Text, Pressable, Icon, HStack } from "native-base";
 
 export default function BankAccountScreen() {
-  // Correctly typed navigation
-  const navigation = useNavigation<NativeStackNavigationProp<BankAccountStackParamList>>();
+  const navigation = useNavigation<any>();
+  const route = useRoute<any>();
+
+  const { loggedInUser } = route.params || {}; // received from login
+
+  const [linkedAccount, setLinkedAccount] = useState<string | null>(null);
 
   return (
     <Box flex={1} bg="#fff">
-      {/* Header Section */}
+      {/* Header */}
       <Box
         bg="#B9BDF0"
         borderBottomRadius={30}
         height={304}
-        pt={4} pb={2}
+        pt={4}
+        pb={2}
         alignItems="center"
-        
       >
-        <HStack  alignItems="center" mt={75}>
+        <HStack alignItems="center" mt={75}>
           <Text
-          flex={1} textAlign="center"
-          color="#fff"
-          fontSize={32}
-          fontWeight="bold"
-          fontFamily="Inter"
-        >
-          Bank Account
-        </Text>
+            flex={1}
+            textAlign="center"
+            color="#fff"
+            fontSize={32}
+            fontWeight="bold"
+          >
+            Bank Account
+          </Text>
         </HStack>
       </Box>
 
       {/* Main Content */}
-      <VStack flex={1} justifyContent="space-between" alignItems="center" px={10} mt={8} mb={40} space={6}>
-        {/* Description */}
+      <VStack
+        flex={1}
+        justifyContent="space-between"
+        alignItems="center"
+        px={10}
+        mt={8}
+        mb={40}
+        space={6}
+      >
         <Text
           fontSize={16}
           fontWeight="400"
@@ -58,8 +54,17 @@ export default function BankAccountScreen() {
           Easily Cash in/Cash out from your bank account
         </Text>
 
-        {/* Link Bank Account Button */}
-        <Pressable onPress={() => navigation.navigate("LinkBankAccount")}>
+        {linkedAccount && (
+          <Text fontSize={18} fontWeight="500" color="#7A83F4">
+            Linked Account: {linkedAccount}
+          </Text>
+        )}
+
+        <Pressable
+          onPress={() =>
+            navigation.navigate("LinkBankAccount", { loggedInUser })
+          }
+        >
           <Box
             bg="#fff"
             borderRadius={10}
@@ -77,12 +82,7 @@ export default function BankAccountScreen() {
               color="#B9BDF0"
               mr={2}
             />
-            <Text
-              color="#B9BDF0"
-              fontSize={16}
-              fontWeight="400"
-              fontFamily="Inter"
-            >
+            <Text color="#B9BDF0" fontSize={16} fontWeight="400">
               Link Bank Account
             </Text>
           </Box>

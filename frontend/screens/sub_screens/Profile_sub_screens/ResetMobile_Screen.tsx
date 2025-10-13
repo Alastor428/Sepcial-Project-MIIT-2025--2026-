@@ -64,7 +64,7 @@ const ResetMobileNumberScreen = ({ navigation }) => {
 
       {/* Next Button */}
       <HStack justifyContent={"center"} py={10}>
-        <NextButton onPress={() => navigation.navigate("PinEntryScreen")} />
+        <NextButton onPress={() => navigation.navigate("ResetPin")} />
       </HStack>
     </Box>
   );

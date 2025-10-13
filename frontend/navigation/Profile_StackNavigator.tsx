@@ -6,6 +6,8 @@ import ResetUsernameScreen from "../screens/sub_screens/Profile_sub_screens/Rese
 import ResetMobileNumberScreen from "../screens/sub_screens/Profile_sub_screens/ResetMobile_Screen";
 import ResetPasswordScreen from "../screens/sub_screens/Profile_sub_screens/ResetPassword_Screen";
 import ResetDateOfBirthScreen from "../screens/sub_screens/Profile_sub_screens/ResetDateOfBirth_screen";
+import PhoneNumberScreen from "../auth/PhoneNumberScreen";
+import ResetPinScreen from "../screens/sub_screens/Profile_sub_screens/ResetPinScreen";
 
 function PlaceholderScreen() {
   return null;
@@ -18,6 +20,8 @@ export type RootStackParamList = {
     ResetMobileNumber: undefined;
     ResetPassword: undefined;
     ResetDateOfBirth: undefined;
+    PhoneNumber: undefined;
+    ResetPin: {loggegInUser: any};
 };
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -38,6 +42,8 @@ export default function ProfileScreen_StackNavigator({
         <Stack.Screen name="ResetMobileNumber" component={ResetMobileNumberScreen} />
         <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
         <Stack.Screen name="ResetDateOfBirth" component={ResetDateOfBirthScreen} />
+        <Stack.Screen name="PhoneNumber" component={PhoneNumberScreen} />
+        <Stack.Screen name="ResetPin" component={ResetPinScreen}/>
     </Stack.Navigator>
   );
 };

@@ -1,5 +1,5 @@
 // CashOutScreen.tsx
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { TextInput } from "react-native";
 import {
   Box,
@@ -9,33 +9,43 @@ import {
   Pressable,
   Icon,
   Center,
-  Spinner,
 } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
-import axios from "axios";
 import ContinueButton from "../../../../components/continue_button";
 import ContactPicker from "../../../../components/contacts";
-import TransferConfirmModal from "../../../../components/transfer_comfirm_modal";
+import axios from "axios";
+
+
+// ✅ Dummy bank data
+const dummyBankData: any = {
+  KBZ: { accountName: "Kiran Linn", balance: 150000 },
+  AYA: { accountName: "Kiran Linn", balance: 50000 },
+  CB: { accountName: "Kiran Linn", balance: 20000 },
+};
 
 export default function CashOutScreen({ navigation, route }: any) {
-  const [mode, setMode] = useState<"agent" | "bank">("agent"); // toggle mode
-  const [user, setUser] = useState<any>(null);
+  const [mode, setMode] = useState<"agent" | "bank">("agent");
   const [amount, setAmount] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [showConfirm, setShowConfirm] = useState(false);
 
-  // Default values to prevent undefined errors
-  const { recipient = {}, loggedInUser = {} } = route.params || {};
+  // Get data from route params
+  const {
+    loggedInUser,
+    selectedBank = "KBZ",
+    bankAccount = "00123456789",
+  } = route.params || {};
+  type RouteParams = {
+  selectedBank: string;
+  bankAccount: string;
+  loggedInUser: {
+    name: string;
+    userId: string;
+    pin: string;
+  };
+};
 
-  // Fetch user only in bank mode
-  useEffect(() => {
-    if (mode === "bank") {
-      axios
-        .get("http://192.168.99.96:5000/api/user/123456789/dashboard")
-        .then((res) => setUser(res.data))
-        .catch((err) => console.error("Backend error:", err));
-    }
-  }, [mode]);
+  // ✅ Use dummy bank info
+  const bankInfo = dummyBankData[selectedBank];
 
   const onTransferPress = () => {
     const numericAmount = parseFloat(amount);
@@ -45,16 +55,23 @@ export default function CashOutScreen({ navigation, route }: any) {
       return;
     }
 
-    if (mode === "bank" && user && numericAmount > user.balance) {
+    if (mode === "bank" && numericAmount > (bankInfo?.balance ?? 0)) {
       alert("Insufficient balance. Please enter a lower amount.");
       setAmount("");
       return;
     }
 
-  };
-
-  const handleConfirm = () => {
-    navigation.navigate("EnterPin", { amount });
+    navigation.navigate("PinScreen", {
+      sender: loggedInUser,
+      recipient: {
+        name: selectedBank,
+        accountNumber: bankAccount,
+      },
+      amount: numericAmount,
+      bankaccount: bankAccount,
+    });
+    setAmount("");
+      
   };
 
   return (
@@ -117,7 +134,7 @@ export default function CashOutScreen({ navigation, route }: any) {
         </HStack>
       </Box>
 
-      {/* Agent Mode */}
+      {/* AGENT MODE */}
       {mode === "agent" && (
         <Center mt={-5}>
           <Box
@@ -158,7 +175,7 @@ export default function CashOutScreen({ navigation, route }: any) {
               }
               try {
                 const res = await axios.get(
-                  `http://192.168.99.96:5000/api/user/check/${phoneNumber}`
+                  `http://192.168.99.96:3000/api/user/check/${phoneNumber}`
                 );
 
                 if (res.data?.valid && res.data?.user) {
@@ -178,112 +195,104 @@ export default function CashOutScreen({ navigation, route }: any) {
         </Center>
       )}
 
-      {/* Bank Mode */}
+      {/* BANK MODE */}
       {mode === "bank" && (
         <>
-          {!user ? (
-            <Center flex={1}>
-              <Spinner size="lg" />
-              <Text mt={4}>Loading...</Text>
-            </Center>
-          ) : (
-            <>
-              <HStack justifyContent="center">
-                <Box
-                  width={328}
-                  height={256}
-                  bg={"#fff"}
-                  borderRadius={20}
-                  shadow={5}
-                  mt={31}
-                  mb={10}
-                >
-                  {/* User Info */}
-                  <HStack
-                    px={4}
-                    pt={4}
-                    bg={"#7a83f4"}
-                    borderTopLeftRadius={20}
-                    borderTopRightRadius={20}
-                    justifyContent={"center"}
-                    height={104}
-                  >
-                    <VStack justifyContent={"center"} alignItems={"center"}>
-                      <HStack mb={2}>
-                        <Icon
-                          as={Ionicons}
-                          name="person-circle-outline"
-                          size={7}
-                          color="#fff"
-                        />
-                        <Text color="#fff" fontSize={20}>
-                          {user?.name || "Loading..."}
-                        </Text>
-                      </HStack>
-                      <Text color="#fff" fontSize={14} opacity={0.5}>
-                        ID - {user?.userId || "-"}
-                      </Text>
-                    </VStack>
-                  </HStack>
-
-                  {/* Amount Input */}
-                  <HStack justifyContent={"center"} alignItems={"center"}>
-                    <Text
-                      fontSize={16}
-                      color={"#7A83F4"}
-                      mt={14}
-                      fontWeight={"medium"}
-                    >
-                      Transfer Amount
-                    </Text>
-                  </HStack>
-                  <HStack
-                    width={"80%"}
-                    style={{ justifyContent: "center" }}
-                    mx={"auto"}
-                  >
-                    <TextInput
-                      style={{
-                        flex: 1,
-                        borderWidth: 0,
-                        fontSize: 18,
-                        paddingVertical: 8,
-                        paddingHorizontal: 4,
-                        borderBottomColor: "#7A83F4",
-                        borderBottomWidth: 2,
-                      }}
-                      placeholder="Enter Amount"
-                      keyboardType="numeric"
-                      value={amount}
-                      onChangeText={(text) => {
-                        const cleaned = text.replace(/[^0-9.]/g, "");
-                        const parts = cleaned.split(".");
-                        const normalized =
-                          parts.length > 2
-                            ? parts[0] + "." + parts.slice(1).join("")
-                            : cleaned;
-                        setAmount(normalized);
-                      }}
+          <HStack justifyContent="center">
+            <Box
+              width={328}
+              height={256}
+              bg={"#fff"}
+              borderRadius={20}
+              shadow={5}
+              mt={31}
+              mb={10}
+            >
+              {/* Bank Info */}
+              <HStack
+                px={4}
+                pt={4}
+                bg={"#7a83f4"}
+                borderTopLeftRadius={20}
+                borderTopRightRadius={20}
+                justifyContent={"center"}
+                height={104}
+              >
+                <VStack justifyContent={"center"} alignItems={"center"}>
+                  <HStack mb={2}>
+                    <Icon
+                      as={Ionicons}
+                      name="bank-outline"
+                      size={7}
+                      color="#fff"
                     />
-                    <Text fontSize="lg" color="#7A83F4" ml={2}>
-                      Ks
+                    <Text color="#fff" fontSize={20}>
+                      {selectedBank}
                     </Text>
                   </HStack>
-
-                  {/* Balance */}
-                  <HStack justifyContent={"center"} alignItems={"center"}>
-                    <Text fontSize={14} color={"#7A83F4"} mt={23} opacity={0.5}>
-                      Total Balance (Ks): {user?.balance || 0} Ks
-                    </Text>
-                  </HStack>
-                </Box>
+                  <Text color="#fff" fontSize={14} opacity={0.5}>
+                    Account - {bankAccount}
+                  </Text>
+                </VStack>
               </HStack>
 
-              <HStack justifyContent="center">
-                <ContinueButton onPress={handleConfirm} />
+              {/* Amount Input */}
+              <HStack justifyContent={"center"} alignItems={"center"}>
+                <Text
+                  fontSize={16}
+                  color={"#7A83F4"}
+                  mt={14}
+                  fontWeight={"medium"}
+                >
+                  Transfer Amount
+                </Text>
               </HStack>
-            </>
-          )}
+
+              <HStack
+                width={"80%"}
+                style={{ justifyContent: "center" }}
+                mx={"auto"}
+              >
+                <TextInput
+                  style={{
+                    flex: 1,
+                    borderWidth: 0,
+                    fontSize: 18,
+                    paddingVertical: 8,
+                    paddingHorizontal: 4,
+                    borderBottomColor: "#7A83F4",
+                    borderBottomWidth: 2,
+                  }}
+                  placeholder="Enter Amount"
+                  keyboardType="numeric"
+                  value={amount}
+                  onChangeText={(text) => {
+                    const cleaned = text.replace(/[^0-9.]/g, "");
+                    const parts = cleaned.split(".");
+                    const normalized =
+                      parts.length > 2
+                        ? parts[0] + "." + parts.slice(1).join("")
+                        : cleaned;
+                    setAmount(normalized);
+                  }}
+                />
+                <Text fontSize="lg" color="#7A83F4" ml={2}>
+                  Ks
+                </Text>
+              </HStack>
+
+              {/* Balance */}
+              <HStack justifyContent={"center"} alignItems={"center"}>
+                <Text fontSize={14} color={"#7A83F4"} mt={23} opacity={0.5}>
+                  Total Balance (Ks): {bankInfo?.balance ?? 0} Ks
+                </Text>
+              </HStack>
+            </Box>
+          </HStack>
+
+          <HStack justifyContent="center">
+            <ContinueButton onPress={onTransferPress} />
+          </HStack>
         </>
       )}
     </Box>
