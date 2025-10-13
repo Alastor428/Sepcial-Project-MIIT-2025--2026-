@@ -17,6 +17,14 @@ export default function QuickPayScreen() {
   const navigation = useNavigation<any>();
   const [search, setSearch] = useState("");
 
+  // ✅ Temporary mock user — replace with real data from your backend later
+  const loggedInUser = {
+    userId: "12345",
+    name: "John Doe",
+    balance: 12000,
+    pin: "1234",
+  };
+
   return (
     <Box flex={1} bg="#fff">
       {/* Header */}
@@ -65,38 +73,36 @@ export default function QuickPayScreen() {
       </VStack>
 
       {/* Categories */}
-      <ScrollView px={8} mt={4} pt={4} marginLeft={-4}>
+      <ScrollView px={8} mt={4} pt={4}>
         <Text fontSize="20" fontWeight="bold" mb={3}>
           Categories
         </Text>
 
         {/* Education Category */}
         <Pressable
-          onPress={() => navigation.navigate("EducationScreen")}
+          onPress={() =>
+            navigation.navigate("EducationScreen", { loggedInUser })
+          }
           borderRadius="md"
           bg="#fff"
-          p={14}
-          mb={41}
+          p={6}
+          mb={6}
+          shadow={4}
         >
-          <HStack
-            alignItems="center"
-            justifyContent="space-between"
-            shadow={"4"}
-          >
+          <HStack alignItems="center" justifyContent="space-between">
             <HStack alignItems="center" space={3}>
               <Box
                 bg="#7A83F4"
                 borderRadius="full"
-                p={2}
+                p={3}
                 alignItems="center"
                 justifyContent="center"
-                shadow={"4"}
               >
                 <Icon
                   as={MaterialCommunityIcons}
                   name="school"
                   size={6}
-                  color="#ffff"
+                  color="#fff"
                 />
               </Box>
               <VStack>
@@ -104,7 +110,7 @@ export default function QuickPayScreen() {
                   Education
                 </Text>
                 <Text fontSize="12" color="#7A83F4" opacity={0.5}>
-                  MIT, ILBC, GUSTO College, Technological University
+                  MIIT, ILBC, GUSTO College, Technological University
                 </Text>
               </VStack>
             </HStack>

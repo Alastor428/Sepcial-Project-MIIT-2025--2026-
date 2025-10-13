@@ -223,3 +223,70 @@ export const getMonthlySummary = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed to fetch monthly summary" });
   }
 };
+
+// Education payment endpoint
+export const processEducationPayment = async (req: Request, res: Response) => {
+  try {
+    const { senderId, institutionId, amount, studentDetails } = req.body;
+
+    if (!senderId || !institutionId || !amount) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    const numericAmount = parseFloat(amount);
+    if (isNaN(numericAmount) || numericAmount <= 0) {
+      return res.status(400).json({ error: "Invalid amount" });
+    }
+
+    const db = getDB();
+
+    // Find sender
+    const sender = await db.collection("users").findOne({ userId: senderId });
+    if (!sender) {
+      return res.status(404).json({ error: "Sender not found" });
+    }
+
+    if (sender.balance < numericAmount) {
+      return res.status(400).json({ error: "Insufficient balance" });
+    }
+
+    // Update sender balance
+    await db
+      .collection("users")
+      .updateOne({ userId: senderId }, { $inc: { balance: -numericAmount } });
+
+    // Create education payment transaction
+    const transaction = {
+      from: senderId,
+      to: institutionId,
+      fromName: sender.name,
+      toName: studentDetails?.institutionName || "Education Institution",
+      amount: numericAmount,
+      timestamp: new Date(),
+      type: "education_payment",
+      studentDetails: {
+        studentName: studentDetails?.studentName,
+        studentId: studentDetails?.studentId,
+        contactNumber: studentDetails?.contactNumber,
+        semester: studentDetails?.semester,
+        institution: studentDetails?.institutionName,
+      },
+    };
+
+    await db.collection("transactions").insertOne(transaction);
+
+    // Get updated sender balance
+    const updatedSender = await db
+      .collection("users")
+      .findOne({ userId: senderId });
+
+    res.status(200).json({
+      message: "Education payment successful",
+      transaction,
+      sender: updatedSender,
+    });
+  } catch (error) {
+    console.error("Education payment error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};

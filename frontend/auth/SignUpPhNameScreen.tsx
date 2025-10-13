@@ -19,7 +19,10 @@ type SignUpScreenProps = {
   onContinue: (data: { name: string; phone: string; pin: string }) => void;
 };
 
-export default function SignUpScreen({ onBack, onContinue }: SignUpScreenProps) {
+export default function SignUpScreen({
+  onBack,
+  onContinue,
+}: SignUpScreenProps) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [pin, setPin] = useState("");
@@ -32,12 +35,23 @@ export default function SignUpScreen({ onBack, onContinue }: SignUpScreenProps) 
     }
 
     if (phone.length < 10) {
-      setError("Enter a valid phone number");
+      setError("Enter a valid phone number (at least 10 digits)");
       return;
     }
 
     if (pin.length < 4) {
       setError("PIN must be at least 4 digits");
+      return;
+    }
+
+    if (pin.length > 6) {
+      setError("PIN must be maximum 6 digits");
+      return;
+    }
+
+    // Validate phone number format (Myanmar phone numbers)
+    if (!phone.startsWith("09")) {
+      setError("Phone number must start with 09");
       return;
     }
 
@@ -78,8 +92,13 @@ export default function SignUpScreen({ onBack, onContinue }: SignUpScreenProps) 
             <TextInput
               placeholder="09xxxxxxxxx"
               value={phone}
-              onChangeText={setPhone}
+              onChangeText={(text) => {
+                // Only allow numbers and limit to 11 digits
+                const cleaned = text.replace(/[^0-9]/g, "").slice(0, 11);
+                setPhone(cleaned);
+              }}
               keyboardType="phone-pad"
+              maxLength={11}
               style={{
                 backgroundColor: "white",
                 borderWidth: 1,
@@ -114,11 +133,16 @@ export default function SignUpScreen({ onBack, onContinue }: SignUpScreenProps) 
               Create PIN
             </Text>
             <TextInput
-              placeholder="Enter PIN"
+              placeholder="Enter PIN (4-6 digits)"
               value={pin}
-              onChangeText={setPin}
+              onChangeText={(text) => {
+                // Only allow numbers and limit to 6 digits
+                const cleaned = text.replace(/[^0-9]/g, "").slice(0, 6);
+                setPin(cleaned);
+              }}
               keyboardType="number-pad"
               secureTextEntry
+              maxLength={6}
               style={{
                 backgroundColor: "white",
                 borderWidth: 1,
@@ -130,8 +154,9 @@ export default function SignUpScreen({ onBack, onContinue }: SignUpScreenProps) 
           </FormControl>
 
           {error ? <Text color="red.500">{error}</Text> : null}
-
-          <ContinueButton onPress={handleSignUp} />
+          <Box w="100%" alignItems="center" mt={4}>
+            <ContinueButton onPress={handleSignUp} />
+          </Box>
         </VStack>
       </HStack>
     </Box>

@@ -73,12 +73,31 @@ export default function App() {
                   nrcData.gender.slice(1), // Male, Female
                 employment: nrcData.job,
               };
-              await userAPI.register(fullData);
+
+              console.log("Registering user with data:", fullData);
+              const registeredUser = await userAPI.register(fullData);
+              console.log("Registration successful:", registeredUser);
+
+              // Show success message
+              alert("Account created successfully! You can now login.");
+
               setCurrentScreen("phone");
               setSignUpData(null);
-            } catch (error) {
+            } catch (error: any) {
               console.error("Registration error:", error);
-              // Handle error, perhaps show alert
+
+              // Handle specific error messages
+              if (error.response?.data?.message === "User already exists") {
+                alert(
+                  "An account with this phone number already exists. Please use a different phone number or try logging in."
+                );
+              } else if (error.response?.data?.error) {
+                alert(`Registration failed: ${error.response.data.error}`);
+              } else {
+                alert(
+                  "Registration failed. Please check your internet connection and try again."
+                );
+              }
             }
           }}
         />

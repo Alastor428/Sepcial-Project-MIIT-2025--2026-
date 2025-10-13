@@ -15,7 +15,7 @@ import TopUpPinScreen from "../screens/sub_screens/Home_sub_screens/top_up_scree
 import QuickPayScreen from "../screens/sub_screens/Home_sub_screens/quick_pay_screens/Quickpay";
 import EducationScreen from "../screens/sub_screens/Home_sub_screens/quick_pay_screens/Education";
 import MIITPaymentScreen from "../screens/sub_screens/Home_sub_screens/quick_pay_screens/MIIT";
-import QuickPayPinScreen from "../screens/sub_screens/Home_sub_screens/quick_pay_screens/Quickpay pin";
+import QuickPayPinScreen from "../screens/sub_screens/Home_sub_screens/quick_pay_screens/Quickpay_pin";
 import CashOutScreen from "../screens/sub_screens/Home_sub_screens/cash_out_screens/cash-out-screen";
 function PlaceholderScreen() {
   return null;
@@ -52,50 +52,87 @@ export type RootStackParamList = {
     };
     amount: string | number;
   };
-  TransactionDetailsScreen: { transactionData: {
+  TransactionDetailsScreen: {
+    transactionData: {
       sender: any;
       recipient: { userId: string; name: string };
       amount: number;
       date: string;
       time: string;
-    }; };
-  CashOut: { recipient: any;
+    };
+  };
+  CashOut: {
+    recipient: any;
     loggedInUser: any;
     sender: {
       name: string;
       balance: number;
       userId: string;
-    };};
-  CashIn: { loggedInUser: { name: string; userId: string; balance: number }; 
-  currentAmount?: string };
+    };
+  };
+  CashIn: {
+    loggedInUser: { name: string; userId: string; balance: number };
+    currentAmount?: string;
+  };
   PinEntryScreen: { sender: any; recipient: any; amount: number };
-  QuickPay: { loggedInUser: { name: string; userId: string; balance: number };currentAmount?: string };
-  EducationScreen: { loggedInUser: { sender: any; recipient: any; amount: number }};
-  MIITPayment: { loggedInUser: {sender: any; recipient: any; amount: number; name: string; userId: string; balance: number} };
-  QuickPayPinScreen: { transactionData: {
+  QuickPay: {
+    loggedInUser: { name: string; userId: string; balance: number };
+    currentAmount?: string;
+  };
+  EducationScreen: {
+    loggedInUser: {
+      name: string;
+      userId: string;
+      balance: number;
+      pin: string;
+    };
+  };
+  MIITPayment: {
+    loggedInUser: {
+      name: string;
+      userId: string;
+      balance: number;
+      pin: string;
+    };
+    selectedInstitution: {
+      id: number;
+      name: string;
+      type: string;
+      location: string;
+      logo: string;
+    };
+  };
+  QuickPayPinScreen: {
+    transactionData: {
       sender: {
-      name: string;
-      balance: number;
-      userId: string;
-      pin: string;
+        name: string;
+        balance: number;
+        userId: string;
+        pin: string;
+      };
+      recipient: {
+        name: string;
+        balance: number;
+        userId: string;
+        pin: string;
+      };
+      amount: string | number;
+      details?: {
+        studentName: string;
+        studentId: string;
+        contactNumber: string;
+        semester: string;
+        institutionName: string;
+      };
     };
-    recipient: {
-      name: string;
-      balance: number;
-      userId: string;
-      pin: string;
-    };
-    amount: string | number;
-  };};
-   TopUpScreen: { loggedInUser: any }; // or your user type
+  };
+  TopUpScreen: { loggedInUser: any }; // or your user type
   TopUpPinScreen: {
-  sender: any;
-  recipient: { userId: string; name?: string }; // <-- allow optional name
-  amount: number;
-  phoneNumber: string;
-};
-
-
+    sender: any;
+    recipient: { userId: string; name?: string }; // <-- allow optional name
+    amount: number;
+    phoneNumber: string;
+  };
 };
 
 const Stack = createStackNavigator<RootStackParamList>();

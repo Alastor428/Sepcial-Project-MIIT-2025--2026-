@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { TextInput } from "react-native";
+import { TextInput, TouchableOpacity, Modal, FlatList } from "react-native";
 import {
   Center,
   VStack,
@@ -11,7 +11,7 @@ import {
   HStack,
   ScrollView,
   Select,
-
+  Spinner,
 } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
 import ContinueButton from "../components/continue_button";
@@ -19,10 +19,19 @@ import ContinueButton from "../components/continue_button";
 type NRCScreenProps = {
   onBack: () => void;
   signUpData: { name: string; phone: string; pin: string };
-  onContinue: (data: { nrc: string; birthday: string; gender: string; job: string }) => void;
+  onContinue: (data: {
+    nrc: string;
+    birthday: string;
+    gender: string;
+    job: string;
+  }) => void;
 };
 
-export default function NRCScreen({ onBack, signUpData, onContinue }: NRCScreenProps) {
+export default function NRCScreen({
+  onBack,
+  signUpData,
+  onContinue,
+}: NRCScreenProps) {
   const [stateCode, setStateCode] = useState("");
   const [townshipCode, setTownshipCode] = useState("");
   const [citizenType, setCitizenType] = useState("");
@@ -33,8 +42,9 @@ export default function NRCScreen({ onBack, signUpData, onContinue }: NRCScreenP
   const [gender, setGender] = useState("");
   const [job, setJob] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (
       !stateCode ||
       !townshipCode ||
@@ -54,9 +64,17 @@ export default function NRCScreen({ onBack, signUpData, onContinue }: NRCScreenP
     const fullNrc = `${stateCode}/${townshipCode}(${citizenType})${nrcNumber}`;
 
     setError("");
-    console.log("Sign-up data:", { nrc: fullNrc, birthday, gender, job });
+    setIsLoading(true);
 
-    onContinue({ nrc: fullNrc, birthday, gender, job });
+    try {
+      console.log("Sign-up data:", { nrc: fullNrc, birthday, gender, job });
+      await onContinue({ nrc: fullNrc, birthday, gender, job });
+    } catch (error) {
+      console.error("Error in NRC screen:", error);
+      setError("Failed to create account. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -88,7 +106,6 @@ export default function NRCScreen({ onBack, signUpData, onContinue }: NRCScreenP
                 flex={1}
                 selectedValue={stateCode}
                 placeholder="State/Region"
-
                 onValueChange={setStateCode}
               >
                 <Select.Item label="1 - Kachin" value="1" />
@@ -112,7 +129,6 @@ export default function NRCScreen({ onBack, signUpData, onContinue }: NRCScreenP
                 flex={1}
                 selectedValue={townshipCode}
                 placeholder="Township"
-
                 onValueChange={setTownshipCode}
               >
                 <Select.Item label="PaKaTa" value="PaKaTa" />
@@ -142,7 +158,6 @@ export default function NRCScreen({ onBack, signUpData, onContinue }: NRCScreenP
                 flex={1}
                 selectedValue={citizenType}
                 placeholder="Type"
-
                 onValueChange={setCitizenType}
               >
                 <Select.Item label="N (Citizen)" value="N" />
@@ -222,7 +237,6 @@ export default function NRCScreen({ onBack, signUpData, onContinue }: NRCScreenP
             <Select
               selectedValue={gender}
               placeholder="Select Gender"
-              
               onValueChange={setGender}
             >
               <Select.Item label="Male" value="male" />
@@ -255,7 +269,16 @@ export default function NRCScreen({ onBack, signUpData, onContinue }: NRCScreenP
           {error ? <Text color="red.500">{error}</Text> : null}
 
           {/* Continue */}
-          <ContinueButton onPress={handleNext} />
+          {isLoading ? (
+            <Center py={4}>
+              <Spinner size="lg" color="#7A83F4" />
+              <Text mt={2} color="#7A83F4">
+                Creating Account...
+              </Text>
+            </Center>
+          ) : (
+            <ContinueButton onPress={handleNext} />
+          )}
         </VStack>
       </ScrollView>
     </Box>

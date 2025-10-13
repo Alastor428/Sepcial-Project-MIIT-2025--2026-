@@ -73,6 +73,24 @@ export const transactionAPI = {
     );
     return response.data;
   },
+
+  // Education payment
+  processEducationPayment: async (
+    senderId,
+    institutionId,
+    amount,
+    studentDetails,
+    pin // ✅ Add pin argument
+  ) => {
+    const response = await api.post("/transactions/education-payment", {
+      senderId,
+      institutionId,
+      amount,
+      studentDetails,
+      pin, // ✅ Send pin in request body
+    });
+    return response.data;
+  },
 };
 
 // Health check

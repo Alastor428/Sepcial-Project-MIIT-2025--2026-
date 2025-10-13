@@ -1,7 +1,5 @@
-// Education.tsx
-import React, { useState } from "react";
-import { useNavigation } from "@react-navigation/native";
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import React, { useState, useEffect } from "react";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import {
   Box,
   VStack,
@@ -12,7 +10,10 @@ import {
   ScrollView,
   Avatar,
   Center,
+  Spinner,
 } from "native-base";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import axios from "axios";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import type { RootStackParamList } from "../../../../navigation/HomeScreen_StackNavigator";
 
@@ -23,25 +24,52 @@ type EducationScreenNavProp = StackNavigationProp<
 
 export default function EducationScreen() {
   const navigation = useNavigation<EducationScreenNavProp>();
-  const [search, setSearch] = useState("");
+  const route = useRoute<any>();
+  const { loggedInUser } = route.params || {};
 
-  const institutions = [
-    {
-      id: 1,
-      name: "Myanmar Institute of Information Technology University (MIIT)",
-      type: "University",
-      location: "Mandalay",
-      logo: "https://miit-logo.png",
-      screen: "MIITPayment",
-    },
-  ];
+  const [institutions, setInstitutions] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredInstitutions = institutions.filter(
-    (institution) =>
-      institution.name.toLowerCase().includes(search.toLowerCase()) ||
-      institution.type.toLowerCase().includes(search.toLowerCase()) ||
-      institution.location.toLowerCase().includes(search.toLowerCase())
-  );
+  useEffect(() => {
+    axios
+      .get("http://192.168.99.96:5000/api/institutions")
+      .then((res) => {
+        setInstitutions(
+          res.data.length
+            ? res.data
+            : [
+                {
+                  id: 1,
+                  name: "MIIT",
+                  type: "University",
+                  location: "Mandalay",
+                  logo: "https://miit-logo.png",
+                },
+              ]
+        );
+      })
+      .catch(() => {
+        setInstitutions([
+          {
+            id: 1,
+            name: "MIIT",
+            type: "University",
+            location: "Mandalay",
+            logo: "https://miit-logo.png",
+          },
+        ]);
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return (
+      <Center flex={1}>
+        <Spinner color="#7A83F4" />
+        <Text mt={2}>Loading institutions...</Text>
+      </Center>
+    );
+  }
 
   return (
     <Box flex={1} bg="#fff">
@@ -65,26 +93,18 @@ export default function EducationScreen() {
         </HStack>
       </Box>
 
-      {/* Institutions */}
+      {/* Institution List */}
       <ScrollView px={3} mt={-3}>
-        {filteredInstitutions.length > 0 ? (
-          filteredInstitutions.map((institution) => (
+        {institutions.length > 0 ? (
+          institutions.map((institution) => (
             <Pressable
               key={institution.id}
               onPress={() =>
-  navigation.navigate("MIITPayment", {
-  loggedInUser: {
-    sender: null,
-    recipient: null,
-    amount: 0,
-    name: "loggedInUser.name", 
-    userId: "loggedInUser.userId",   
-    balance: 0,
-  },
-})
-
-}
-
+                navigation.navigate("MIITPayment", {
+                  loggedInUser,
+                  selectedInstitution: institution,
+                })
+              }
               borderRadius="md"
               bg="#fff"
               p={4}
@@ -96,7 +116,6 @@ export default function EducationScreen() {
                   size="md"
                   source={{ uri: institution.logo }}
                   bg="#7A83F4"
-                  _text={{ color: "#fff", fontWeight: "bold" }}
                 >
                   {institution.name.charAt(0)}
                 </Avatar>
